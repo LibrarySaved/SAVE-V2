@@ -1,0 +1,191 @@
+{
+  "brand_identity": {
+    "name": "SaveStack",
+    "description": "The central nervous system for your digital life. Save, organize, and monetize content from any social platform.",
+    "archetype": "Sophisticated Vibrant",
+    "tone": "Organized, Visual, Premium, Minimalist but Colorful",
+    "target_audience": "Content Creators, Digital Marketers, Curators, Power Users"
+  },
+  "typography": {
+    "fonts": {
+      "headings": {
+        "family": "Outfit",
+        "fallback": "sans-serif",
+        "weights": ["500", "700", "900"],
+        "usage": "Landing page headlines, major section titles, feature names. DO NOT use for body text."
+      },
+      "body": {
+        "family": "Manrope",
+        "fallback": "sans-serif",
+        "weights": ["400", "500", "600"],
+        "usage": "Dashboard UI, long-form text, inputs, labels, buttons."
+      },
+      "mono": {
+        "family": "JetBrains Mono",
+        "fallback": "monospace",
+        "usage": "Code snippets, API keys, technical details."
+      }
+    },
+    "installation_commands": [
+      "@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Outfit:wght@500;700;900&family=JetBrains+Mono:wght@400;500&display=swap');"
+    ],
+    "rules": {
+      "headings": "Use tight tracking (tracking-tight) for all headings larger than 24px.",
+      "overline": "Uppercase, tracking-widest, text-xs, font-bold.",
+      "body": "Relaxed leading (leading-relaxed) for readability."
+    }
+  },
+  "colors": {
+    "theme_strategy": "Sophisticated Vibrant",
+    "light_mode": {
+      "background": "#FAFAFA",
+      "foreground": "#18181B",
+      "card": "#FFFFFF",
+      "card_foreground": "#18181B",
+      "border": "#E4E4E7",
+      "primary": "#18181B",
+      "primary_foreground": "#FAFAFA",
+      "muted": "#F4F4F5",
+      "muted_foreground": "#71717A"
+    },
+    "dark_mode": {
+      "background": "#09090B",
+      "foreground": "#FAFAFA",
+      "card": "#18181B",
+      "card_foreground": "#FAFAFA",
+      "border": "#27272A",
+      "primary": "#FAFAFA",
+      "primary_foreground": "#18181B",
+      "muted": "#27272A",
+      "muted_foreground": "#A1A1AA"
+    },
+    "brand_colors": {
+      "instagram": { "bg": "#E1306C", "text": "#FFFFFF", "gradient": "from-[#833AB4] via-[#FD1D1D] to-[#FCB045]" },
+      "tiktok": { "bg": "#000000", "text": "#FFFFFF", "accent": "#00F2EA" },
+      "youtube": { "bg": "#FF0000", "text": "#FFFFFF" },
+      "twitter": { "bg": "#000000", "text": "#FFFFFF" },
+      "pinterest": { "bg": "#E60023", "text": "#FFFFFF" },
+      "linkedin": { "bg": "#0A66C2", "text": "#FFFFFF" },
+      "generic": { "bg": "#2563EB", "text": "#FFFFFF" }
+    },
+    "gradients": {
+      "hero_glow": "bg-gradient-to-tr from-purple-500/20 via-cyan-500/20 to-transparent blur-3xl",
+      "glass_surface": "bg-white/70 dark:bg-black/60 backdrop-blur-xl border border-white/20 dark:border-white/10"
+    }
+  },
+  "visual_enhancers": {
+    "glassmorphism": {
+      "strategy": "Crystal Clarity",
+      "classes": "backdrop-blur-xl bg-white/70 dark:bg-black/60 border border-white/20 dark:border-white/10 shadow-sm"
+    },
+    "borders": {
+      "radius": "rounded-xl",
+      "width": "border",
+      "color": "border-border"
+    },
+    "shadows": {
+      "card": "shadow-[0_2px_8px_rgba(0,0,0,0.04)] dark:shadow-none",
+      "hover": "shadow-[0_8px_30px_rgba(0,0,0,0.12)] dark:shadow-[0_8px_30px_rgba(255,255,255,0.05)]"
+    }
+  },
+  "layout_strategies": {
+    "dashboard_grid": {
+      "type": "Masonry",
+      "columns": "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4",
+      "gap": "gap-6",
+      "rule": "Use 'react-masonry-css' or pure CSS columns for the feed view to accommodate varying content heights (images vs text)."
+    },
+    "bento_grid": {
+      "type": "Feature Display",
+      "classes": "grid grid-cols-1 md:grid-cols-3 gap-4",
+      "spans": {
+        "hero": "md:col-span-2 md:row-span-2",
+        "tall": "md:col-span-1 md:row-span-2",
+        "wide": "md:col-span-2 md:row-span-1",
+        "small": "md:col-span-1 md:row-span-1"
+      }
+    }
+  },
+  "component_rules": {
+    "buttons": {
+      "primary": "rounded-full px-8 py-6 font-semibold shadow-lg hover:shadow-xl transition-all hover:scale-105",
+      "secondary": "rounded-full px-8 py-6 border border-input bg-background hover:bg-accent hover:text-accent-foreground transition-all",
+      "ghost": "rounded-full hover:bg-accent hover:text-accent-foreground"
+    },
+    "cards": {
+      "content_card": "group relative overflow-hidden rounded-2xl border border-border bg-card text-card-foreground shadow-sm transition-all hover:shadow-md hover:-translate-y-1",
+      "feature_card": "rounded-3xl border border-border/50 bg-gradient-to-b from-white/50 to-white/10 dark:from-white/5 dark:to-transparent backdrop-blur-md p-8"
+    },
+    "inputs": {
+      "style": "h-12 rounded-xl border-input bg-background/50 backdrop-blur-sm px-4 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+    }
+  },
+  "motion": {
+    "libraries": ["framer-motion"],
+    "preferences": {
+      "reduced_motion": "respect-preference",
+      "default_transition": { "duration": 0.3, "ease": "easeInOut" }
+    },
+    "animations": {
+      "fade_in_up": {
+        "initial": { "opacity": 0, "y": 20 },
+        "animate": { "opacity": 1, "y": 0 },
+        "transition": { "duration": 0.5 }
+      },
+      "stagger_children": {
+        "container": {
+          "hidden": { "opacity": 0 },
+          "show": { "opacity": 1, "transition": { "staggerChildren": 0.1 } }
+        },
+        "item": {
+          "hidden": { "opacity": 0, "y": 10 },
+          "show": { "opacity": 1, "y": 0 }
+        }
+      }
+    }
+  },
+  "images": {
+    "hero_main": "https://images.unsplash.com/photo-1758600433493-4e28af428cb7?auto=format&fit=crop&q=80",
+    "feature_hand": "https://images.unsplash.com/photo-1770507770417-e4d19ab45c91?auto=format&fit=crop&q=80",
+    "background_texture": "https://images.unsplash.com/photo-1763259109031-990906150f6f?auto=format&fit=crop&q=80",
+    "placeholders": {
+      "interior": "https://images.unsplash.com/photo-1703867110051-a0eb1e77b967?auto=format&fit=crop&q=80",
+      "fashion": "https://images.unsplash.com/photo-1764698403474-de152b479d59?auto=format&fit=crop&q=80",
+      "food": "https://images.unsplash.com/photo-1625813506062-0aeb1d7a094b?auto=format&fit=crop&q=80",
+      "tech": "https://images.unsplash.com/photo-1770899621442-24237af4c8b4?auto=format&fit=crop&q=80"
+    }
+  },
+  "icons": {
+    "library": "lucide-react",
+    "brands": "react-icons/fa6",
+    "usage": "Use Lucide for UI (Home, Settings, User). Use React Icons (FontAwesome 6) for Brands (FaInstagram, FaTiktok, FaYoutube, FaTwitter, FaPinterest)."
+  },
+  "instructions_to_main_agent": [
+    "Install dependencies: `npm install lucide-react react-icons framer-motion clsx tailwind-merge`",
+    "Use the `Manrope` font for UI elements and `Outfit` for Headings. Add the import to `index.css`.",
+    "Implement the 'Dark/Light' toggle immediately in the Navbar.",
+    "The Dashboard MUST use a masonry-style layout for the saved content items.",
+    "Use the mapped images for the landing page hero and feature sections.",
+    "Do NOT use standard 'blue' links. Use the brand colors defined in the JSON for platform-specific links.",
+    "Ensure all interactive elements have `data-testid` attributes."
+  ],
+  "UNIVERSAL_GUIDELINES_FOR_MAIN_AGENT": [
+    "You tend to converge toward generic, 'on distribution' outputs. In frontend design, this creates what users call the 'AI slop' aesthetic. Avoid this: make creative, distinctive frontends that surprise and delight.",
+    "Dark colors look good when used independently without gradients. DO NOT use dark colors as gradients.",
+    "Don't make generic centered layouts, simplistic gradients, and uniform styling.",
+    "Create depth through layered design elements with z-index hierarchy.",
+    "Use glass-morphism effects with backdrop filters (12-24px blur).",
+    "You MUST NOT apply universal transition. Eg: `transition: all`. This results in breaking transforms. Always add transitions for specific interactive elements like button, input excluding transforms.",
+    "You MUST NOT center align the app container, ie do not add `.App { text-align: center; }` in the css file. This disrupts the human natural reading flow of text.",
+    "Always use modern button styles like pill-shaped, or sharp button with interaction animations & color relevant to the app style.",
+    "NEVER: use AI assistant Emoji characters like 🤖🧠 etc for icons.",
+    "Every interaction needs micro-animations - hover states, transitions, parallax effects, and entrance animations. Static = dead.",
+    "Use 2-3x more spacing than feels comfortable. Cramped designs look cheap.",
+    "Subtle grain textures, noise overlays, custom cursors, selection states, and loading animations: separates good from extraordinary.",
+    "Main agent relies on these image URLs. Missing categories (especially sponsor logos) = main agent will use placeholder text which is FORBIDDEN.",
+    "Prioritize using pre-existing components from src/components/ui when applicable.",
+    "Components MUST use named exports (export const ComponentName = ...).",
+    "Pages MUST use default exports (export default function PageName() {...}).",
+    "Use `sonner` for toasts. Sonner component are located in `/app/frontend/src/components/ui/sonner.jsx`."
+  ]
+}
