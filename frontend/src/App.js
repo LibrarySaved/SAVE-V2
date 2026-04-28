@@ -6,6 +6,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { toast } from "sonner";
 import { Sparkles, AlertTriangle } from "lucide-react";
 import { ThemeCustomizationProvider } from "@/contexts/ThemeCustomizationContext";
+import { I18nProvider } from "@/contexts/I18nContext";
 
 // Pages
 import LandingPage from "@/pages/LandingPage";
@@ -330,14 +331,16 @@ function App() {
   return (
     <ThemeProvider>
       <ThemeCustomizationProvider>
-        <BrowserRouter>
-          <AuthProvider>
-            <NotificationsProvider>
-              <AppRouter />
-              <Toaster position="top-right" />
-            </NotificationsProvider>
-          </AuthProvider>
-        </BrowserRouter>
+        <I18nProvider>
+          <BrowserRouter>
+            <AuthProvider>
+              <NotificationsProvider>
+                <AppRouter />
+                <Toaster position="top-right" />
+              </NotificationsProvider>
+            </AuthProvider>
+          </BrowserRouter>
+        </I18nProvider>
       </ThemeCustomizationProvider>
     </ThemeProvider>
   );

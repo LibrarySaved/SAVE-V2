@@ -1050,6 +1050,77 @@ async def export_user_data(user: User = Depends(get_current_user)):
     return export_data
 
 # ==================== CATEGORIES ROUTE ====================
+@api_router.get("/content/memories/on-this-day")
+async def get_on_this_day(user: User = Depends(get_current_user)):
+    """Return saved content from the same calendar day in past months/years.
+
+    Groups results by relative period: 1 month, 3 months, 6 months, 1 year, 2 years, 3+ years.
+    Each bucket contains the matching items (today's day + month, but in a past period).
+    """
+    today = datetime.now(timezone.utc)
+
+    # Build date windows: same calendar day (DD) within month windows that fall on
+    # 1mo, 3mo, 6mo, 1y, 2y, 3y, 4y, 5y ago. Use a +/- 1 day tolerance to handle
+    # month-end edge cases.
+    def shift(months: int):
+        # Compute target year/month
+        total = (today.year * 12 + (today.month - 1)) - months
+        y, m = divmod(total, 12)
+        return y, m + 1
+
+    buckets_def = [
+        {"key": "1_month", "label_fr": "Il y a 1 mois", "label_en": "1 month ago", "months": 1},
+        {"key": "3_months", "label_fr": "Il y a 3 mois", "label_en": "3 months ago", "months": 3},
+        {"key": "6_months", "label_fr": "Il y a 6 mois", "label_en": "6 months ago", "months": 6},
+        {"key": "1_year", "label_fr": "Il y a 1 an", "label_en": "1 year ago", "months": 12},
+        {"key": "2_years", "label_fr": "Il y a 2 ans", "label_en": "2 years ago", "months": 24},
+        {"key": "3_years", "label_fr": "Il y a 3 ans", "label_en": "3 years ago", "months": 36},
+        {"key": "5_years", "label_fr": "Il y a 5 ans", "label_en": "5 years ago", "months": 60},
+    ]
+
+    buckets = []
+    for b in buckets_def:
+        try:
+            y, m = shift(b["months"])
+            target = today.replace(year=y, month=m)
+        except ValueError:
+            # Day doesn't exist in target month (e.g. Feb 30) -> use last valid day
+            from calendar import monthrange
+            y, m = shift(b["months"])
+            last_day = monthrange(y, m)[1]
+            day = min(today.day, last_day)
+            target = today.replace(year=y, month=m, day=day)
+
+        # +/- 1 day tolerance
+        start = (target - timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
+        end = (target + timedelta(days=1)).replace(hour=23, minute=59, second=59, microsecond=999999)
+
+        items = await db.saved_content.find(
+            {
+                "user_id": user.user_id,
+                "created_at": {"$gte": start.isoformat(), "$lte": end.isoformat()},
+            },
+            {"_id": 0, "raw_text": 0},
+        ).sort("created_at", -1).to_list(50)
+
+        if items:
+            buckets.append({
+                "key": b["key"],
+                "label_fr": b["label_fr"],
+                "label_en": b["label_en"],
+                "months_ago": b["months"],
+                "target_date": target.date().isoformat(),
+                "count": len(items),
+                "items": items,
+            })
+
+    return {
+        "today": today.date().isoformat(),
+        "buckets": buckets,
+        "total_memories": sum(b["count"] for b in buckets),
+    }
+
+
 @api_router.get("/categories")
 async def get_categories(user: User = Depends(get_current_user)):
     """Get all unique categories for user's content"""

@@ -34,6 +34,7 @@ import { AdBanner, AdNative, AdStickyFooter } from "@/components/AdComponents";
 import { Logo } from "@/components/Logo";
 import { ColorCustomizer } from "@/components/ColorCustomizer";
 import { NotificationsBell } from "@/components/NotificationsBell";
+import { OnThisDayWidget } from "@/components/OnThisDayWidget";
 import {
   Bookmark, Search, Plus, Grid3X3, List, Heart, ExternalLink,
   MoreHorizontal, Trash2, Edit, FolderPlus, Moon, Sun, LogOut,
@@ -1003,6 +1004,11 @@ export default function DashboardPage() {
 
         {/* Content Grid */}
         <div className="p-8">
+          {/* On This Day memories — only on main dashboard */}
+          {activePage === "dashboard" && !isSemanticSearch && !searchQuery && (
+            <OnThisDayWidget />
+          )}
+
           {displayContent.length === 0 ? (
             <div className="text-center py-20">
               <div className="w-16 h-16 rounded-2xl bg-muted flex items-center justify-center mx-auto mb-4">

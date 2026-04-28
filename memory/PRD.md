@@ -130,6 +130,50 @@ Créer une application qui permettrait de répertorier tout ce qu'on enregistre 
 
 ---
 
+## v2.3 — Memories, Pitch Banner & i18n FR/EN (29/04/2026)
+
+### Widget "Sur cette même date" (souvenirs Google Photos style)
+- Backend: nouveau endpoint `GET /api/content/memories/on-this-day`
+  - Calcule des fenêtres ±1 jour autour du même jour calendaire pour 1, 3, 6 mois, puis 1, 2, 3, 5 ans
+  - Gère les bords de mois (ex: 31 mars → 28 février si l'an précédent n'a pas le 31)
+  - Renvoie buckets avec items (jusqu'à 50/bucket), exclut `_id` et `raw_text`
+- Frontend: composant `OnThisDayWidget` au-dessus de la grille du dashboard
+  - Tabs par bucket cliquables (1 mois, 6 mois, 1 an...)
+  - Carousel 4 vignettes avec animation + hover ExternalLink
+  - Bouton Dismiss persistant pour la journée (localStorage)
+  - Affichage uniquement sur dashboard principal (pas sur favoris/collections/recherche)
+
+### Bannière pitch (remplace l'image Unsplash "Netflix-style")
+- Image hero supprimée → bannière gradient avec card sombre + glow effects
+- Texte: « Vous êtes fatigué de sauvegarder du contenu et de ne jamais le retrouver ? saved. est fait pour vous. »
+- Grille 3 promesses avec icônes (Lightbulb, Layers, Users)
+- Tagline finale italique: « Personnalisable à 100% : saved. est le miroir de vos réseaux sociaux préférés. »
+
+### Internationalisation (FR / EN)
+- Nouveau context `I18nContext` avec helper `t(key, params)`
+- 2 langues actives: 🇫🇷 Français, 🇬🇧 English
+- 5 langues "coming soon" (Espagnol, Allemand, Italien, Portugais, Japonais) affichées en grisé
+- Auto-détection via `navigator.language` + persistance localStorage
+- Composant `LanguageSwitcher` (icône Globe) ajouté à la navbar landing (desktop + mobile)
+- 100% du contenu de la LandingPage traduit (Hero, Pitch, Features, Business model, Footer)
+
+### Fichiers ajoutés / modifiés
+```
+/app/backend/server.py                                    (endpoint memories)
+/app/frontend/src/contexts/I18nContext.jsx                (nouveau)
+/app/frontend/src/components/LanguageSwitcher.jsx         (nouveau)
+/app/frontend/src/components/OnThisDayWidget.jsx          (nouveau)
+/app/frontend/src/App.js                                  (I18nProvider wrap)
+/app/frontend/src/pages/LandingPage.jsx                   (pitch banner + i18n)
+/app/frontend/src/pages/DashboardPage.jsx                 (OnThisDay widget)
+```
+
+### Backlog mis à jour
+- [ ] Traduire DashboardPage, SettingsPage, CollectionsPage en EN (P1)
+- [ ] Intégrer DeepL pour automatiser ES/DE/IT/PT/JA (P2)
+
+---
+
 ## v2.2 — Rebranding "saved." & Notifications IA (29/04/2026)
 
 ### Rebranding
