@@ -1,6 +1,6 @@
 // SaveStack Browser Extension - Background Service Worker
 
-const SAVESTACK_URL = 'https://social-hub-687.preview.emergentagent.com';
+const SAVESTACK_URL = 'https://social-hub-687.emergent.host';
 const API_URL = `${SAVESTACK_URL}/api`;
 
 // Create context menu on install

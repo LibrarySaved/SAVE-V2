@@ -1,7 +1,7 @@
 // SaveStack Content Script
 // Injects a floating action button on social media sites
 
-const SAVESTACK_URL = 'https://social-hub-687.preview.emergentagent.com';
+const SAVESTACK_URL = 'https://social-hub-687.emergent.host';
 
 // Check if we're on a supported social media site
 function isSocialMediaSite() {

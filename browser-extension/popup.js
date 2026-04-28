@@ -1,6 +1,6 @@
 // SaveStack Popup Script
 
-const SAVESTACK_URL = 'https://social-hub-687.preview.emergentagent.com';
+const SAVESTACK_URL = 'https://social-hub-687.emergent.host';
 
 document.addEventListener('DOMContentLoaded', () => {
   // Get current page info
