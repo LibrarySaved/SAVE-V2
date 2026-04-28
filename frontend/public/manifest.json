@@ -1,0 +1,62 @@
+{
+  "name": "SaveStack",
+  "short_name": "SaveStack",
+  "description": "Centralisez tout ce que vous sauvegardez sur les réseaux sociaux",
+  "start_url": "/dashboard",
+  "display": "standalone",
+  "background_color": "#fafafa",
+  "theme_color": "#9333ea",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/logo192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/logo512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "share_target": {
+    "action": "/share",
+    "method": "GET",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
+  },
+  "shortcuts": [
+    {
+      "name": "Ajouter un contenu",
+      "short_name": "Ajouter",
+      "description": "Sauvegarder un nouveau contenu",
+      "url": "/dashboard?save=true",
+      "icons": [
+        {
+          "src": "/logo192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Mes favoris",
+      "short_name": "Favoris",
+      "description": "Voir mes contenus favoris",
+      "url": "/dashboard?filter=favorites",
+      "icons": [
+        {
+          "src": "/logo192.png",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ],
+  "categories": ["productivity", "social"],
+  "lang": "fr",
+  "dir": "ltr"
+}

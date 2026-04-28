@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import axios from "axios";
 import { Button } from "@/components/ui/button";
@@ -383,7 +383,7 @@ const ContentCard = ({ content, onEdit, onDelete, onToggleFavorite, onReprocess 
   );
 };
 
-const AddContentModal = ({ open, onClose, collections, onSuccess }) => {
+const AddContentModal = ({ open, onClose, collections, onSuccess, prefillData }) => {
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     platform: "instagram",
@@ -396,6 +396,20 @@ const AddContentModal = ({ open, onClose, collections, onSuccess }) => {
     tags: "",
     collection_ids: []
   });
+
+  // Update form when prefillData changes (from extension or share)
+  useEffect(() => {
+    if (prefillData && open) {
+      setFormData(prev => ({
+        ...prev,
+        url: prefillData.url || prev.url,
+        title: prefillData.title || prev.title,
+        platform: prefillData.platform || prev.platform,
+        content_type: prefillData.type || prev.content_type,
+        thumbnail_url: prefillData.thumbnail || prev.thumbnail_url,
+      }));
+    }
+  }, [prefillData, open]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -560,6 +574,7 @@ const AddContentModal = ({ open, onClose, collections, onSuccess }) => {
 
 export default function DashboardPage() {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { user, logout } = useAuth();
   const [activePage, setActivePage] = useState("dashboard");
   const [activeCollectionId, setActiveCollectionId] = useState(null);
@@ -577,6 +592,32 @@ export default function DashboardPage() {
   const [isSemanticSearch, setIsSemanticSearch] = useState(false);
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
+  
+  // Prefill data from URL params (extension or share)
+  const [prefillData, setPrefillData] = useState(null);
+
+  // Check URL params for quick save from extension/share
+  useEffect(() => {
+    const shouldSave = searchParams.get("save");
+    const url = searchParams.get("url");
+    const title = searchParams.get("title");
+    const platform = searchParams.get("platform");
+    const type = searchParams.get("type");
+    const thumbnail = searchParams.get("thumbnail");
+
+    if (shouldSave === "true" && url) {
+      setPrefillData({ url, title, platform, type, thumbnail });
+      setShowAddModal(true);
+      // Clear URL params after reading
+      setSearchParams({});
+    }
+    
+    // Check for filter param
+    const filter = searchParams.get("filter");
+    if (filter === "favorites") {
+      setActivePage("favorites");
+    }
+  }, [searchParams, setSearchParams]);
 
   const fetchData = useCallback(async () => {
     try {
@@ -899,9 +940,13 @@ export default function DashboardPage() {
       {/* Add Content Modal */}
       <AddContentModal
         open={showAddModal}
-        onClose={() => setShowAddModal(false)}
+        onClose={() => {
+          setShowAddModal(false);
+          setPrefillData(null);
+        }}
         collections={collections}
         onSuccess={fetchData}
+        prefillData={prefillData}
       />
 
       {/* Sticky Footer Ad */}

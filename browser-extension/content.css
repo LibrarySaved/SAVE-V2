@@ -1,0 +1,65 @@
+/* SaveStack Content Script Styles */
+
+.savestack-toast {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: linear-gradient(135deg, #9333ea, #ec4899);
+  color: white;
+  padding: 12px 20px;
+  border-radius: 12px;
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  box-shadow: 0 4px 20px rgba(147, 51, 234, 0.4);
+  z-index: 999999;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.savestack-toast-icon {
+  width: 20px;
+  height: 20px;
+}
+
+.savestack-fab {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 56px;
+  height: 56px;
+  background: linear-gradient(135deg, #9333ea, #ec4899, #f97316);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 20px rgba(147, 51, 234, 0.4);
+  z-index: 999998;
+  transition: all 0.3s ease;
+  border: none;
+}
+
+.savestack-fab:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 30px rgba(147, 51, 234, 0.5);
+}
+
+.savestack-fab svg {
+  width: 24px;
+  height: 24px;
+  fill: white;
+}

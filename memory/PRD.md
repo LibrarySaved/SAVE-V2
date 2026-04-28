@@ -103,9 +103,11 @@ Créer une application qui permettrait de répertorier tout ce qu'on enregistre 
 - [x] Semantic search
 
 ### P1 - High Priority
-- [ ] Extension navigateur pour sauvegarder en un clic
-- [ ] Intégration OAuth directe avec plateformes sociales (import automatique des saves)
+- [x] Extension navigateur pour sauvegarder en un clic (Chrome/Firefox)
+- [x] PWA avec Web Share Target (partage mobile comme WhatsApp)
+- [x] Page /share pour recevoir les partages
 - [ ] Notifications push quand le traitement AI est terminé
+- [ ] Import automatique via APIs officielles des réseaux sociaux
 
 ### P2 - Medium Priority  
 - [ ] Export en différents formats (CSV, JSON, PDF)
@@ -120,7 +122,39 @@ Créer une application qui permettrait de répertorier tout ce qu'on enregistre 
 - [ ] Suggestions de contenus similaires
 
 ## Next Tasks
-1. Implémenter l'extension navigateur Chrome/Firefox
-2. Ajouter le support de l'import automatique depuis Instagram/TikTok
-3. Améliorer la gestion des erreurs de traitement AI
+1. Publier l'extension sur Chrome Web Store et Firefox Add-ons
+2. Ajouter les notifications push quand l'IA termine l'analyse
+3. Implémenter l'import automatique via APIs officielles
 4. Optimiser les performances des embeddings pour de gros volumes
+
+---
+
+## Extension & PWA (v2.1 - 28/04/2026)
+
+### Extension Navigateur
+- **Popup** avec info de la page et bouton de sauvegarde
+- **Menu contextuel** (clic droit) pour liens, pages, images, vidéos
+- **Raccourci clavier** : Ctrl/Cmd + Shift + S
+- **Bouton flottant (FAB)** sur les sites de réseaux sociaux
+- **Détection automatique** de plateforme et type de contenu
+
+### PWA Mobile (Web Share Target)
+- **Partage natif** : SaveStack apparaît dans le menu "Partager vers..."
+- **Page /share** : Reçoit les données partagées et ouvre le formulaire
+- **Pré-remplissage automatique** de l'URL et détection de plateforme
+- **Installation** sur écran d'accueil (iOS Safari, Android Chrome)
+
+### Fichiers créés
+```
+/app/browser-extension/
+├── manifest.json
+├── background.js
+├── popup.html
+├── popup.js
+├── content.js
+├── content.css
+└── README.md
+
+/app/frontend/src/pages/SharePage.jsx
+/app/frontend/public/manifest.json (mise à jour avec share_target)
+```

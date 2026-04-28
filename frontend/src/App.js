@@ -10,6 +10,7 @@ import LoginPage from "@/pages/LoginPage";
 import DashboardPage from "@/pages/DashboardPage";
 import CollectionsPage from "@/pages/CollectionsPage";
 import SettingsPage from "@/pages/SettingsPage";
+import SharePage from "@/pages/SharePage";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 export const API = `${BACKEND_URL}/api`;
@@ -188,6 +189,7 @@ const AppRouter = () => {
     <Routes>
       <Route path="/" element={<LandingPage />} />
       <Route path="/login" element={<LoginPage />} />
+      <Route path="/share" element={<SharePage />} />
       <Route
         path="/dashboard"
         element={
