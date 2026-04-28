@@ -1,0 +1,140 @@
+[
+  {
+    "test": "API Root",
+    "success": true,
+    "details": "Status: 200",
+    "timestamp": "2026-04-28T15:12:29.052067"
+  },
+  {
+    "test": "AI Features Enabled in Root",
+    "success": true,
+    "details": "ai_enabled: True, version: 2.0.0",
+    "timestamp": "2026-04-28T15:12:29.052656"
+  },
+  {
+    "test": "Health Check",
+    "success": true,
+    "details": "Status: 200",
+    "timestamp": "2026-04-28T15:12:29.296334"
+  },
+  {
+    "test": "AI Enabled in Health Check",
+    "success": true,
+    "details": "ai_enabled: True",
+    "timestamp": "2026-04-28T15:12:29.296961"
+  },
+  {
+    "test": "Auth Me (Unauthorized)",
+    "success": true,
+    "details": "Status: 401",
+    "timestamp": "2026-04-28T15:12:29.411050"
+  },
+  {
+    "test": "Logout (No Session)",
+    "success": true,
+    "details": "Status: 200",
+    "timestamp": "2026-04-28T15:12:29.542231"
+  },
+  {
+    "test": "Get Collections (Unauthorized)",
+    "success": true,
+    "details": "Status: 401",
+    "timestamp": "2026-04-28T15:12:29.658435"
+  },
+  {
+    "test": "Create Collection (Unauthorized)",
+    "success": true,
+    "details": "Status: 401",
+    "timestamp": "2026-04-28T15:12:29.764359"
+  },
+  {
+    "test": "Get Content (Unauthorized)",
+    "success": true,
+    "details": "Status: 401",
+    "timestamp": "2026-04-28T15:12:29.836883"
+  },
+  {
+    "test": "Create Content (Unauthorized)",
+    "success": true,
+    "details": "Status: 401",
+    "timestamp": "2026-04-28T15:12:29.933720"
+  },
+  {
+    "test": "Get User Stats (Unauthorized)",
+    "success": true,
+    "details": "Status: 401",
+    "timestamp": "2026-04-28T15:12:30.027129"
+  },
+  {
+    "test": "Semantic Search (Unauthorized)",
+    "success": true,
+    "details": "Status: 401",
+    "timestamp": "2026-04-28T15:12:30.161799"
+  },
+  {
+    "test": "Categories (Unauthorized)",
+    "success": true,
+    "details": "Status: 401",
+    "timestamp": "2026-04-28T15:12:30.238437"
+  },
+  {
+    "test": "User Export (Unauthorized)",
+    "success": true,
+    "details": "Status: 401",
+    "timestamp": "2026-04-28T15:12:30.314834"
+  },
+  {
+    "test": "Content Reprocess (Unauthorized)",
+    "success": true,
+    "details": "Status: 401",
+    "timestamp": "2026-04-28T15:12:30.426189"
+  },
+  {
+    "test": "CORS Configuration",
+    "success": true,
+    "details": "CORS headers present or allowed",
+    "timestamp": "2026-04-28T15:12:30.473468"
+  },
+  {
+    "test": "Endpoint Exists: GET /collections",
+    "success": true,
+    "details": "Status: 401",
+    "timestamp": "2026-04-28T15:12:30.553162"
+  },
+  {
+    "test": "Endpoint Exists: GET /content",
+    "success": true,
+    "details": "Status: 401",
+    "timestamp": "2026-04-28T15:12:30.633003"
+  },
+  {
+    "test": "Endpoint Exists: GET /user/stats",
+    "success": true,
+    "details": "Status: 401",
+    "timestamp": "2026-04-28T15:12:30.722063"
+  },
+  {
+    "test": "Endpoint Exists: GET /auth/me",
+    "success": true,
+    "details": "Status: 401",
+    "timestamp": "2026-04-28T15:12:30.860796"
+  },
+  {
+    "test": "Endpoint Exists: POST /search",
+    "success": true,
+    "details": "Status: 401",
+    "timestamp": "2026-04-28T15:12:30.953203"
+  },
+  {
+    "test": "Endpoint Exists: GET /categories",
+    "success": true,
+    "details": "Status: 401",
+    "timestamp": "2026-04-28T15:12:31.046072"
+  },
+  {
+    "test": "Endpoint Exists: GET /user/export",
+    "success": true,
+    "details": "Status: 401",
+    "timestamp": "2026-04-28T15:12:31.138589"
+  }
+]
