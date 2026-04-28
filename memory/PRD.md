@@ -106,7 +106,8 @@ Créer une application qui permettrait de répertorier tout ce qu'on enregistre 
 - [x] Extension navigateur pour sauvegarder en un clic (Chrome/Firefox)
 - [x] PWA avec Web Share Target (partage mobile comme WhatsApp)
 - [x] Page /share pour recevoir les partages
-- [ ] Notifications push quand le traitement AI est terminé
+- [x] Notifications in-app quand le traitement AI est terminé (toasts + bell historique)
+- [ ] Notifications push réelles (Service Worker + VAPID) — optionnel
 - [ ] Import automatique via APIs officielles des réseaux sociaux
 
 ### P2 - Medium Priority  
@@ -123,9 +124,55 @@ Créer une application qui permettrait de répertorier tout ce qu'on enregistre 
 
 ## Next Tasks
 1. Publier l'extension sur Chrome Web Store et Firefox Add-ons
-2. Ajouter les notifications push quand l'IA termine l'analyse
-3. Implémenter l'import automatique via APIs officielles
-4. Optimiser les performances des embeddings pour de gros volumes
+2. Implémenter l'import automatique via APIs officielles
+3. Optimiser les performances des embeddings pour de gros volumes
+4. Ajouter notifications push réelles via Service Worker + VAPID (P2 — pour l'instant in-app uniquement)
+
+---
+
+## v2.2 — Rebranding "saved." & Notifications IA (29/04/2026)
+
+### Rebranding
+- Nom: **saved.** — *your digital library*
+- Title HTML, manifest.json, browser-extension manifest mis à jour
+- Métadonnées PWA (theme_color #8B5CF6, background_color #0F0F12)
+
+### Icônes officielles
+- Générées via `/app/scripts/generate_icons.py` (PIL)
+- Sizes: 16, 32, 48, 64, 96, 128, 192, 256, 384, 512 px (PNG)
+- Variantes maskable 192/512 pour PWA Android
+- favicon.ico multi-résolution, apple-touch-icon 180px
+- Icônes browser extension (16/32/48/128) régénérées
+- Style: rounded square purple (#8B5CF6) + bookmark blanc + dot accent
+
+### Notifications IA in-app (choix utilisateur)
+- `NotificationsProvider` réécrit pour utiliser `sonner` toasts + historique persistant (localStorage, max 50)
+- Composant `NotificationsBell` ajouté dans la topbar dashboard:
+  - Badge animé pendant le traitement IA (cloche qui s'agite)
+  - Compteur de notifications non lues
+  - Popover avec historique, dates relatives, marquer comme lu, effacer
+- Polling toutes les 5s sur `ai_status` → toast + entrée historique quand l'IA termine
+- `trackProcessing` synchronisé automatiquement avec les éléments en `processing`/`pending`
+
+### Bug critique corrigé
+- Variables CSS `--background`, `--foreground`, etc. en format RGB cassé (`250 250 250`) → restaurées en HSL (`0 0% 100%`). La landing page s'affichait en jaune fluo.
+
+### Fichiers modifiés / créés
+```
+/app/frontend/src/index.css                      (HSL fix)
+/app/frontend/src/App.js                         (Notifications via sonner)
+/app/frontend/src/components/NotificationsBell.jsx (nouveau)
+/app/frontend/src/pages/DashboardPage.jsx        (bell + tracking)
+/app/frontend/public/manifest.json               (rebranding + icônes)
+/app/frontend/public/index.html                  (favicons + title)
+/app/frontend/public/icon-{16..512}.png          (nouvelles icônes)
+/app/frontend/public/favicon.ico                 (multi-res)
+/app/frontend/public/apple-touch-icon.png
+/app/frontend/public/logo192.png + logo512.png
+/app/browser-extension/manifest.json             (rebrand)
+/app/browser-extension/icons/icon{16,32,48,128}.png
+/app/scripts/generate_icons.py                   (script reproductible)
+```
 
 ---
 

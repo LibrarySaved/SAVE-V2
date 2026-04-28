@@ -1,25 +1,25 @@
 {
-  "name": "SaveStack",
-  "short_name": "SaveStack",
-  "description": "Centralisez tout ce que vous sauvegardez sur les réseaux sociaux",
+  "name": "saved. - your digital library",
+  "short_name": "saved.",
+  "description": "Votre mémoire digitale — sauvegardez et retrouvez tout ce que vous aimez sur les réseaux sociaux, enrichi par l'IA.",
   "start_url": "/dashboard",
   "display": "standalone",
-  "background_color": "#fafafa",
-  "theme_color": "#9333ea",
+  "background_color": "#0F0F12",
+  "theme_color": "#8B5CF6",
   "orientation": "portrait-primary",
   "icons": [
-    {
-      "src": "/logo192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "/logo512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
-    }
+    { "src": "/icon-16.png", "sizes": "16x16", "type": "image/png" },
+    { "src": "/icon-32.png", "sizes": "32x32", "type": "image/png" },
+    { "src": "/icon-48.png", "sizes": "48x48", "type": "image/png" },
+    { "src": "/icon-64.png", "sizes": "64x64", "type": "image/png" },
+    { "src": "/icon-96.png", "sizes": "96x96", "type": "image/png" },
+    { "src": "/icon-128.png", "sizes": "128x128", "type": "image/png" },
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-256.png", "sizes": "256x256", "type": "image/png" },
+    { "src": "/icon-384.png", "sizes": "384x384", "type": "image/png" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-maskable-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
   ],
   "share_target": {
     "action": "/share",
@@ -36,27 +36,17 @@
       "short_name": "Ajouter",
       "description": "Sauvegarder un nouveau contenu",
       "url": "/dashboard?save=true",
-      "icons": [
-        {
-          "src": "/logo192.png",
-          "sizes": "192x192"
-        }
-      ]
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
     },
     {
       "name": "Mes favoris",
       "short_name": "Favoris",
       "description": "Voir mes contenus favoris",
       "url": "/dashboard?filter=favorites",
-      "icons": [
-        {
-          "src": "/logo192.png",
-          "sizes": "192x192"
-        }
-      ]
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
     }
   ],
-  "categories": ["productivity", "social"],
+  "categories": ["productivity", "social", "utilities"],
   "lang": "fr",
   "dir": "ltr"
 }

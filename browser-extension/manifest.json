@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
-  "name": "SaveStack - Save to your memory",
-  "description": "Save any content from the web to SaveStack with one click",
+  "name": "saved. — your digital library",
+  "description": "Sauvegardez n'importe quel contenu du web vers saved. en un clic",
   "version": "1.0.0",
   "icons": {
     "16": "icons/icon16.png",
@@ -15,7 +15,7 @@
       "32": "icons/icon32.png",
       "48": "icons/icon48.png"
     },
-    "default_title": "Save to SaveStack",
+    "default_title": "Save to saved.",
     "default_popup": "popup.html"
   },
   "permissions": [

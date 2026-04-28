@@ -3,6 +3,8 @@ import "@/App.css";
 import { BrowserRouter, Routes, Route, useLocation, Navigate, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { Toaster } from "@/components/ui/sonner";
+import { toast } from "sonner";
+import { Sparkles, AlertTriangle } from "lucide-react";
 import { ThemeCustomizationProvider } from "@/contexts/ThemeCustomizationContext";
 
 // Pages
@@ -109,51 +111,95 @@ export const useNotifications = () => {
 };
 
 export const NotificationsProvider = ({ children }) => {
-  const [notifications, setNotifications] = useState([]);
   const [processingItems, setProcessingItems] = useState(new Set());
+  const [history, setHistory] = useState(() => {
+    try {
+      const saved = localStorage.getItem("saved_notifications_history");
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
 
-  const addNotification = (notification) => {
-    const id = Date.now();
-    setNotifications(prev => [...prev, { ...notification, id }]);
-    
-    // Auto-remove after 5 seconds
-    setTimeout(() => {
-      removeNotification(id);
-    }, 5000);
-    
-    return id;
+  const persistHistory = (next) => {
+    setHistory(next);
+    try {
+      localStorage.setItem("saved_notifications_history", JSON.stringify(next.slice(0, 50)));
+    } catch {
+      // ignore quota errors
+    }
   };
 
-  const removeNotification = (id) => {
-    setNotifications(prev => prev.filter(n => n.id !== id));
+  const addNotification = ({ type = "info", title, message, contentId } = {}) => {
+    const entry = {
+      id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+      type,
+      title,
+      message,
+      contentId,
+      createdAt: new Date().toISOString(),
+      read: false,
+    };
+    persistHistory([entry, ...history].slice(0, 50));
+
+    // Show in-app toast via sonner
+    const opts = {
+      description: message,
+      duration: 5000,
+      icon: type === "success"
+        ? <Sparkles className="w-4 h-4" />
+        : type === "error"
+          ? <AlertTriangle className="w-4 h-4" />
+          : undefined,
+    };
+    if (type === "success") toast.success(title, opts);
+    else if (type === "error") toast.error(title, opts);
+    else toast(title, opts);
+
+    return entry.id;
+  };
+
+  const markAllRead = () => {
+    persistHistory(history.map((n) => ({ ...n, read: true })));
+  };
+
+  const clearHistory = () => {
+    persistHistory([]);
   };
 
   const trackProcessing = (contentId) => {
-    setProcessingItems(prev => new Set([...prev, contentId]));
+    setProcessingItems((prev) => new Set([...prev, contentId]));
   };
 
-  const completeProcessing = (contentId, success = true) => {
-    setProcessingItems(prev => {
-      const newSet = new Set(prev);
-      newSet.delete(contentId);
-      return newSet;
+  const completeProcessing = (contentId, success = true, contentTitle = "") => {
+    setProcessingItems((prev) => {
+      const next = new Set(prev);
+      next.delete(contentId);
+      return next;
     });
-    
+
     addNotification({
-      type: success ? 'success' : 'error',
-      title: success ? 'Analyse IA terminée' : 'Échec de l\'analyse',
-      message: success ? 'Votre contenu a été analysé et enrichi par l\'IA' : 'L\'analyse IA a échoué. Vous pouvez réessayer.',
+      type: success ? "success" : "error",
+      title: success ? "Analyse IA terminée" : "Échec de l'analyse IA",
+      message: success
+        ? (contentTitle ? `« ${contentTitle} » a été analysé et enrichi.` : "Votre contenu a été enrichi par l'IA.")
+        : "L'analyse IA a échoué. Vous pouvez relancer le traitement.",
+      contentId,
     });
   };
+
+  const unreadCount = history.filter((n) => !n.read).length;
 
   return (
     <NotificationsContext.Provider value={{
-      notifications,
+      history,
+      unreadCount,
       processingItems,
       addNotification,
-      removeNotification,
+      markAllRead,
+      clearHistory,
       trackProcessing,
-      completeProcessing
+      completeProcessing,
     }}>
       {children}
     </NotificationsContext.Provider>

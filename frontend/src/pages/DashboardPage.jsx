@@ -33,6 +33,7 @@ import { toast } from "sonner";
 import { AdBanner, AdNative, AdStickyFooter } from "@/components/AdComponents";
 import { Logo } from "@/components/Logo";
 import { ColorCustomizer } from "@/components/ColorCustomizer";
+import { NotificationsBell } from "@/components/NotificationsBell";
 import {
   Bookmark, Search, Plus, Grid3X3, List, Heart, ExternalLink,
   MoreHorizontal, Trash2, Edit, FolderPlus, Moon, Sun, LogOut,
@@ -711,7 +712,10 @@ export default function DashboardPage() {
   // Poll for AI processing updates
   useEffect(() => {
     const processingContent = content.filter(c => c.ai_status === "processing" || c.ai_status === "pending");
-    
+
+    // Sync processing badge with current items
+    processingContent.forEach(item => trackProcessing(item.content_id));
+
     if (processingContent.length > 0) {
       const interval = setInterval(async () => {
         try {
@@ -722,10 +726,9 @@ export default function DashboardPage() {
           processingContent.forEach(item => {
             const updated = updatedContent.find(c => c.content_id === item.content_id);
             if (updated && updated.ai_status === "completed") {
-              completeProcessing(item.content_id, true);
-              toast.success(`"${item.title}" analysé par l'IA`);
+              completeProcessing(item.content_id, true, updated.title || item.title);
             } else if (updated && updated.ai_status === "failed") {
-              completeProcessing(item.content_id, false);
+              completeProcessing(item.content_id, false, updated.title || item.title);
             }
           });
           
@@ -737,7 +740,7 @@ export default function DashboardPage() {
       
       return () => clearInterval(interval);
     }
-  }, [content, completeProcessing]);
+  }, [content, completeProcessing, trackProcessing]);
 
   // Semantic search with debounce
   useEffect(() => {
@@ -974,6 +977,9 @@ export default function DashboardPage() {
                     <List className="w-4 h-4" />
                   </button>
                 </div>
+
+                {/* Notifications Bell */}
+                <NotificationsBell />
 
                 {/* Add Button */}
                 <Button
