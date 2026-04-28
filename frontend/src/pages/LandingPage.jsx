@@ -1,10 +1,12 @@
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { useAuth, useTheme } from "@/App";
+import { useAuth, useTheme, APP_NAME, APP_TAGLINE } from "@/App";
+import { useThemeCustomization } from "@/contexts/ThemeCustomizationContext";
+import { Logo, LogoIcon } from "@/components/Logo";
 import { 
   Bookmark, Layers, Search, Sparkles, Zap, Shield, 
-  ArrowRight, Check, Moon, Sun, Menu, X, Heart, Gift
+  ArrowRight, Check, Moon, Sun, Menu, X, Heart, Gift, Palette
 } from "lucide-react";
 import { FaInstagram, FaTiktok, FaYoutube, FaXTwitter, FaPinterest, FaLinkedin } from "react-icons/fa6";
 import { useState } from "react";
@@ -13,18 +15,14 @@ const Navbar = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { theme, toggleTheme } = useTheme();
+  const { colors } = useThemeCustomization();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 glass">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate("/")}>
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-purple-600 via-pink-500 to-orange-400 flex items-center justify-center">
-              <Bookmark className="w-4 h-4 text-white" />
-            </div>
-            <span className="font-bold text-xl tracking-tight font-['Outfit']">SaveStack</span>
-          </div>
+          <Logo size="small" onClick={() => navigate("/")} />
 
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center gap-6">
@@ -39,6 +37,7 @@ const Navbar = () => {
               <Button
                 onClick={() => navigate("/dashboard")}
                 className="rounded-full px-6"
+                style={{ backgroundColor: colors.primary }}
                 data-testid="go-to-dashboard-btn"
               >
                 Dashboard
@@ -47,6 +46,7 @@ const Navbar = () => {
               <Button
                 onClick={() => navigate("/login")}
                 className="rounded-full px-6"
+                style={{ backgroundColor: colors.primary }}
                 data-testid="get-started-btn"
               >
                 Commencer gratuitement
@@ -68,7 +68,11 @@ const Navbar = () => {
         {/* Mobile Menu */}
         {mobileMenuOpen && (
           <div className="md:hidden pb-4 space-y-2">
-            <Button onClick={() => { navigate(user ? "/dashboard" : "/login"); setMobileMenuOpen(false); }} className="w-full rounded-full">
+            <Button 
+              onClick={() => { navigate(user ? "/dashboard" : "/login"); setMobileMenuOpen(false); }} 
+              className="w-full rounded-full"
+              style={{ backgroundColor: colors.primary }}
+            >
               {user ? "Dashboard" : "Commencer gratuitement"}
             </Button>
           </div>
@@ -81,6 +85,7 @@ const Navbar = () => {
 const HeroSection = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { colors } = useThemeCustomization();
 
   const platforms = [
     { icon: FaInstagram, color: "text-pink-500", name: "Instagram" },
@@ -94,8 +99,24 @@ const HeroSection = () => {
   return (
     <section className="relative min-h-screen pt-32 pb-20 overflow-hidden">
       {/* Glow Effects */}
-      <div className="hero-glow top-20 -left-40" />
-      <div className="hero-glow bottom-20 -right-40 opacity-20" style={{ background: "linear-gradient(135deg, #00F2EA 0%, #2563EB 100%)" }} />
+      <div 
+        className="absolute -z-10 blur-3xl opacity-30 top-20 -left-40"
+        style={{ 
+          background: `linear-gradient(135deg, ${colors.primary} 0%, ${colors.secondary} 100%)`,
+          width: '600px',
+          height: '600px',
+          borderRadius: '50%'
+        }}
+      />
+      <div 
+        className="absolute -z-10 blur-3xl opacity-20 bottom-20 -right-40"
+        style={{ 
+          background: `linear-gradient(135deg, ${colors.secondary} 0%, ${colors.accent} 100%)`,
+          width: '600px',
+          height: '600px',
+          borderRadius: '50%'
+        }}
+      />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
         <motion.div
@@ -104,30 +125,42 @@ const HeroSection = () => {
           transition={{ duration: 0.6 }}
           className="text-center max-w-4xl mx-auto"
         >
-          {/* Badge */}
+          {/* Logo Hero */}
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.1 }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-green-500/10 via-emerald-500/10 to-teal-500/10 border border-green-500/20 mb-8"
+            className="flex justify-center mb-8"
           >
-            <Gift className="w-4 h-4 text-green-500" />
+            <Logo size="hero" showTagline />
+          </motion.div>
+
+          {/* Badge */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.2 }}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full border mb-8"
+            style={{ 
+              backgroundColor: `${colors.primary}10`,
+              borderColor: `${colors.primary}30`
+            }}
+          >
+            <Gift className="w-4 h-4" style={{ color: colors.primary }} />
             <span className="text-sm font-medium">100% Gratuit - Pour toujours</span>
           </motion.div>
 
           {/* Headline */}
-          <h1 className="text-4xl sm:text-5xl lg:text-7xl font-black tracking-tight mb-6 font-['Outfit']">
-            Centralisez{" "}
-            <span className="bg-gradient-to-r from-purple-600 via-pink-500 to-orange-400 bg-clip-text text-transparent">
-              tout
-            </span>{" "}
-            ce que vous sauvegardez
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight mb-6 font-['Outfit']">
+            Votre mémoire digitale
+            <br />
+            <span style={{ color: colors.primary }}>personnalisée</span>
           </h1>
 
           {/* Subheadline */}
           <p className="text-lg sm:text-xl text-muted-foreground mb-10 max-w-2xl mx-auto leading-relaxed">
-            Arrêtez de perdre vos posts, reels et favoris éparpillés sur différentes apps. 
-            SaveStack les réunit dans un seul endroit, organisé et accessible.
+            Sauvegardez, organisez et retrouvez instantanément tout ce que vous aimez sur les réseaux sociaux. 
+            L'IA enrichit et catégorise automatiquement vos contenus.
           </p>
 
           {/* CTA Buttons */}
@@ -135,7 +168,8 @@ const HeroSection = () => {
             <Button
               onClick={() => navigate(user ? "/dashboard" : "/login")}
               size="lg"
-              className="rounded-full px-8 py-6 text-lg font-semibold shadow-lg hover:shadow-xl transition-all hover:scale-105 bg-gradient-to-r from-purple-600 via-pink-500 to-orange-400 border-0"
+              className="rounded-full px-8 py-6 text-lg font-semibold shadow-lg hover:shadow-xl transition-all hover:scale-105"
+              style={{ backgroundColor: colors.primary }}
               data-testid="hero-cta-btn"
             >
               Commencer maintenant <ArrowRight className="ml-2 w-5 h-5" />
@@ -145,16 +179,16 @@ const HeroSection = () => {
           {/* Free Features */}
           <div className="flex flex-wrap items-center justify-center gap-6 mb-12">
             <div className="flex items-center gap-2 text-sm">
-              <Check className="w-5 h-5 text-green-500" />
+              <Check className="w-5 h-5" style={{ color: colors.primary }} />
               <span>Saves illimités</span>
             </div>
             <div className="flex items-center gap-2 text-sm">
-              <Check className="w-5 h-5 text-green-500" />
-              <span>Collections illimitées</span>
+              <Check className="w-5 h-5" style={{ color: colors.primary }} />
+              <span>Analyse IA automatique</span>
             </div>
             <div className="flex items-center gap-2 text-sm">
-              <Check className="w-5 h-5 text-green-500" />
-              <span>Toutes les plateformes</span>
+              <Check className="w-5 h-5" style={{ color: colors.primary }} />
+              <span>Interface personnalisable</span>
             </div>
           </div>
 
@@ -185,7 +219,7 @@ const HeroSection = () => {
           <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-border/50 bg-card">
             <img
               src="https://images.unsplash.com/photo-1611162617474-5b21e879e113?auto=format&fit=crop&q=80&w=1920"
-              alt="SaveStack Dashboard Preview"
+              alt="saved. Dashboard Preview"
               className="w-full h-auto opacity-90"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent" />
@@ -197,42 +231,38 @@ const HeroSection = () => {
 };
 
 const FeaturesSection = () => {
+  const { colors } = useThemeCustomization();
+
   const features = [
     {
       icon: Layers,
       title: "Bibliothèque unifiée",
-      description: "Tous vos posts, reels, pins et favoris de chaque plateforme réunis en un seul endroit organisé.",
-      color: "from-purple-500 to-purple-600"
+      description: "Tous vos posts, reels, pins et favoris de chaque plateforme réunis en un seul endroit organisé."
+    },
+    {
+      icon: Sparkles,
+      title: "IA intelligente",
+      description: "L'IA analyse, résume et catégorise automatiquement chaque contenu que vous sauvegardez."
     },
     {
       icon: Search,
-      title: "Recherche intelligente",
-      description: "Retrouvez n'importe quel contenu instantanément avec une recherche puissante par titre, tags et description.",
-      color: "from-pink-500 to-pink-600"
-    },
-    {
-      icon: Bookmark,
-      title: "Collections personnalisées",
-      description: "Organisez votre contenu en collections avec des couleurs et icônes personnalisées. À votre façon.",
-      color: "from-orange-500 to-orange-600"
+      title: "Recherche sémantique",
+      description: "Retrouvez vos contenus en langage naturel : 'la recette de pâtes de la semaine dernière'."
     },
     {
       icon: Zap,
-      title: "Sauvegarde rapide",
-      description: "Sauvegardez du contenu de n'importe quelle plateforme avec juste une URL. On s'occupe du reste.",
-      color: "from-cyan-500 to-cyan-600"
+      title: "Sauvegarde instantanée",
+      description: "Extension navigateur et partage mobile pour sauvegarder en un seul clic."
     },
     {
-      icon: Shield,
-      title: "Toujours disponible",
-      description: "Vos saves sont sauvegardés et accessibles à tout moment, même si l'original est supprimé.",
-      color: "from-green-500 to-green-600"
+      icon: Palette,
+      title: "Personnalisation totale",
+      description: "Faites de saved. le reflet de votre personnalité avec des thèmes et couleurs personnalisés."
     },
     {
       icon: Heart,
-      title: "Favoris & Tags",
-      description: "Marquez vos contenus préférés et ajoutez des tags pour une organisation encore plus fine.",
-      color: "from-red-500 to-red-600"
+      title: "Favoris & Tags IA",
+      description: "Marquez vos contenus préférés et laissez l'IA ajouter des tags intelligents automatiquement."
     }
   ];
 
@@ -245,12 +275,17 @@ const FeaturesSection = () => {
           viewport={{ once: true }}
           className="text-center mb-16"
         >
-          <span className="text-sm font-bold uppercase tracking-widest text-purple-500 mb-4 block">Fonctionnalités</span>
+          <span 
+            className="text-sm font-bold uppercase tracking-widest mb-4 block"
+            style={{ color: colors.primary }}
+          >
+            Fonctionnalités
+          </span>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight mb-4 font-['Outfit']">
             Tout ce qu'il faut pour rester organisé
           </h2>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-            Conçu pour les passionnés de contenu qui sauvegardent sur plusieurs plateformes et veulent un meilleur accès.
+            Conçu pour les passionnés de contenu qui sauvegardent sur plusieurs plateformes.
           </p>
         </motion.div>
 
@@ -264,7 +299,10 @@ const FeaturesSection = () => {
               transition={{ delay: i * 0.1 }}
               className="group relative overflow-hidden rounded-2xl border border-border/50 bg-card p-8 hover:shadow-lg transition-all hover:-translate-y-1"
             >
-              <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${feature.color} flex items-center justify-center mb-6`}>
+              <div 
+                className="w-12 h-12 rounded-xl flex items-center justify-center mb-6"
+                style={{ backgroundColor: colors.primary }}
+              >
                 <feature.icon className="w-6 h-6 text-white" />
               </div>
               <h3 className="text-xl font-bold mb-3 font-['Outfit']">{feature.title}</h3>
@@ -280,6 +318,7 @@ const FeaturesSection = () => {
 const BusinessModelSection = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { colors } = useThemeCustomization();
 
   return (
     <section className="py-24">
@@ -290,12 +329,17 @@ const BusinessModelSection = () => {
           viewport={{ once: true }}
           className="text-center mb-12"
         >
-          <span className="text-sm font-bold uppercase tracking-widest text-green-500 mb-4 block">Notre modèle</span>
+          <span 
+            className="text-sm font-bold uppercase tracking-widest mb-4 block"
+            style={{ color: colors.primary }}
+          >
+            Notre modèle
+          </span>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight mb-4 font-['Outfit']">
             Gratuit pour tout le monde
           </h2>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-            Comme vos réseaux sociaux préférés, SaveStack est entièrement gratuit et financé par la publicité.
+            Comme vos réseaux sociaux préférés, saved. est entièrement gratuit et financé par la publicité.
           </p>
         </motion.div>
 
@@ -303,11 +347,21 @@ const BusinessModelSection = () => {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="rounded-3xl bg-gradient-to-br from-green-500/10 via-emerald-500/10 to-teal-500/10 border border-green-500/20 p-8 md:p-12"
+          className="rounded-3xl border p-8 md:p-12"
+          style={{ 
+            backgroundColor: `${colors.primary}08`,
+            borderColor: `${colors.primary}20`
+          }}
         >
           <div className="grid md:grid-cols-2 gap-8 items-center">
             <div>
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-green-500/20 text-green-600 dark:text-green-400 text-sm font-medium mb-4">
+              <div 
+                className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium mb-4"
+                style={{ 
+                  backgroundColor: `${colors.primary}20`,
+                  color: colors.primary
+                }}
+              >
                 <Gift className="w-4 h-4" />
                 100% Gratuit
               </div>
@@ -315,25 +369,26 @@ const BusinessModelSection = () => {
               <ul className="space-y-3">
                 {[
                   "Saves illimités sur toutes les plateformes",
-                  "Collections illimitées pour organiser",
-                  "Recherche avancée et filtres",
-                  "Mode sombre et clair",
-                  "Accessible sur tous vos appareils"
+                  "Analyse IA automatique de chaque contenu",
+                  "Recherche sémantique intelligente",
+                  "Interface entièrement personnalisable",
+                  "Extension navigateur & partage mobile"
                 ].map(feature => (
                   <li key={feature} className="flex items-center gap-3">
-                    <Check className="w-5 h-5 text-green-500 flex-shrink-0" />
+                    <Check className="w-5 h-5 flex-shrink-0" style={{ color: colors.primary }} />
                     <span>{feature}</span>
                   </li>
                 ))}
               </ul>
             </div>
             <div className="text-center">
-              <div className="text-6xl font-black font-['Outfit'] text-green-500 mb-2">0€</div>
+              <div className="text-6xl font-black font-['Outfit'] mb-2" style={{ color: colors.primary }}>0€</div>
               <p className="text-muted-foreground mb-6">pour toujours</p>
               <Button
                 onClick={() => navigate(user ? "/dashboard" : "/login")}
                 size="lg"
-                className="rounded-full px-8 py-6 text-lg font-semibold bg-green-500 hover:bg-green-600 text-white"
+                className="rounded-full px-8 py-6 text-lg font-semibold text-white"
+                style={{ backgroundColor: colors.primary }}
                 data-testid="free-cta-btn"
               >
                 Commencer maintenant
@@ -351,18 +406,15 @@ const BusinessModelSection = () => {
 };
 
 const Footer = () => {
+  const { colors } = useThemeCustomization();
+
   return (
     <footer className="py-12 border-t border-border">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-purple-600 via-pink-500 to-orange-400 flex items-center justify-center">
-              <Bookmark className="w-4 h-4 text-white" />
-            </div>
-            <span className="font-bold text-lg font-['Outfit']">SaveStack</span>
-          </div>
+          <Logo size="small" />
           <p className="text-sm text-muted-foreground">
-            © 2026 SaveStack. Tous droits réservés.
+            © 2026 saved. Tous droits réservés.
           </p>
           <div className="flex items-center gap-6">
             <a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Confidentialité</a>

@@ -1,14 +1,17 @@
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { useAuth, useTheme } from "@/App";
-import { Bookmark, Moon, Sun, Mail } from "lucide-react";
+import { useAuth, useTheme, APP_NAME, APP_TAGLINE } from "@/App";
+import { useThemeCustomization } from "@/contexts/ThemeCustomizationContext";
+import { Logo } from "@/components/Logo";
+import { Moon, Sun, Mail } from "lucide-react";
 import { FaGoogle } from "react-icons/fa6";
 
 export default function LoginPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { theme, toggleTheme } = useTheme();
+  const { colors } = useThemeCustomization();
 
   // Redirect if already logged in
   if (user) {
@@ -17,7 +20,6 @@ export default function LoginPage() {
   }
 
   const handleGoogleLogin = () => {
-    // REMINDER: DO NOT HARDCODE THE URL, OR ADD ANY FALLBACKS OR REDIRECT URLS, THIS BREAKS THE AUTH
     const redirectUrl = window.location.origin + '/dashboard';
     window.location.href = `https://auth.emergentagent.com/?redirect=${encodeURIComponent(redirectUrl)}`;
   };
@@ -25,33 +27,38 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen bg-background flex">
       {/* Left Panel - Branding */}
-      <div className="hidden lg:flex lg:w-1/2 relative bg-gradient-to-br from-purple-600 via-pink-500 to-orange-400">
-        <div className="absolute inset-0 bg-black/20" />
-        <div className="relative z-10 flex flex-col justify-between p-12 text-white">
-          <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate("/")}>
-            <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
-              <Bookmark className="w-5 h-5" />
-            </div>
-            <span className="font-bold text-2xl font-['Outfit']">SaveStack</span>
-          </div>
+      <div 
+        className="hidden lg:flex lg:w-1/2 relative"
+        style={{ backgroundColor: colors.sidebar }}
+      >
+        <div className="absolute inset-0 bg-black/10" />
+        <div className="relative z-10 flex flex-col justify-between p-12" style={{ color: colors.sidebarText }}>
+          <Logo size="large" showTagline onClick={() => navigate("/")} />
 
           <div className="max-w-md">
             <h1 className="text-4xl font-black mb-6 font-['Outfit']">
-              Your digital life, beautifully organized
+              Votre bibliothèque digitale personnelle
             </h1>
-            <p className="text-lg text-white/80 leading-relaxed">
-              Join thousands of creators and curators who use SaveStack to keep their saved content organized and accessible.
+            <p className="text-lg opacity-80 leading-relaxed">
+              Rejoignez des milliers d'utilisateurs qui utilisent saved. pour organiser leurs contenus favoris et les retrouver instantanément grâce à l'IA.
             </p>
           </div>
 
           <div className="flex items-center gap-4">
             <div className="flex -space-x-3">
               {[1, 2, 3, 4].map(i => (
-                <div key={i} className="w-10 h-10 rounded-full bg-white/30 border-2 border-white/50" />
+                <div 
+                  key={i} 
+                  className="w-10 h-10 rounded-full border-2"
+                  style={{ 
+                    backgroundColor: `${colors.primary}${30 + i * 15}`,
+                    borderColor: colors.sidebar
+                  }}
+                />
               ))}
             </div>
-            <p className="text-sm text-white/80">
-              <span className="font-bold text-white">10,000+</span> happy users
+            <p className="text-sm opacity-80">
+              <span className="font-bold" style={{ color: colors.sidebarText }}>10,000+</span> utilisateurs actifs
             </p>
           </div>
         </div>
@@ -61,11 +68,8 @@ export default function LoginPage() {
       <div className="flex-1 flex flex-col">
         {/* Top Bar */}
         <div className="flex items-center justify-between p-6">
-          <div className="lg:hidden flex items-center gap-2 cursor-pointer" onClick={() => navigate("/")}>
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-purple-600 via-pink-500 to-orange-400 flex items-center justify-center">
-              <Bookmark className="w-4 h-4 text-white" />
-            </div>
-            <span className="font-bold text-xl font-['Outfit']">SaveStack</span>
+          <div className="lg:hidden">
+            <Logo size="small" onClick={() => navigate("/")} />
           </div>
           <div className="ml-auto">
             <button
@@ -86,9 +90,9 @@ export default function LoginPage() {
             className="w-full max-w-md"
           >
             <div className="text-center mb-10">
-              <h2 className="text-3xl font-bold mb-3 font-['Outfit']">Welcome back</h2>
+              <h2 className="text-3xl font-bold mb-3 font-['Outfit']">Bienvenue</h2>
               <p className="text-muted-foreground">
-                Sign in to access your saved content
+                Connectez-vous pour accéder à votre bibliothèque
               </p>
             </div>
 
@@ -102,7 +106,7 @@ export default function LoginPage() {
                 data-testid="google-signin-btn"
               >
                 <FaGoogle className="w-5 h-5 mr-3" />
-                Continue with Google
+                Continuer avec Google
               </Button>
 
               <div className="relative my-8">
@@ -110,7 +114,7 @@ export default function LoginPage() {
                   <div className="w-full border-t border-border"></div>
                 </div>
                 <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-background px-4 text-muted-foreground">or</span>
+                  <span className="bg-background px-4 text-muted-foreground">ou</span>
                 </div>
               </div>
 
@@ -123,15 +127,15 @@ export default function LoginPage() {
                 data-testid="email-signin-btn"
               >
                 <Mail className="w-5 h-5 mr-3" />
-                Email sign in (Coming soon)
+                Email (bientôt disponible)
               </Button>
             </div>
 
             <p className="text-center text-sm text-muted-foreground mt-8">
-              By continuing, you agree to our{" "}
-              <a href="#" className="text-foreground hover:underline">Terms of Service</a>
-              {" "}and{" "}
-              <a href="#" className="text-foreground hover:underline">Privacy Policy</a>
+              En continuant, vous acceptez nos{" "}
+              <a href="#" className="text-foreground hover:underline">Conditions d'utilisation</a>
+              {" "}et notre{" "}
+              <a href="#" className="text-foreground hover:underline">Politique de confidentialité</a>
             </p>
           </motion.div>
         </div>

@@ -4,10 +4,13 @@ import { motion } from "framer-motion";
 import axios from "axios";
 import { Button } from "@/components/ui/button";
 import { useAuth, useTheme, API } from "@/App";
+import { useThemeCustomization } from "@/contexts/ThemeCustomizationContext";
+import { Logo } from "@/components/Logo";
+import { ColorCustomizer } from "@/components/ColorCustomizer";
 import { toast } from "sonner";
 import {
   Bookmark, ArrowLeft, Moon, Sun, LogOut, User,
-  Database, FolderOpen, BarChart3, Mail, Calendar
+  Database, FolderOpen, BarChart3, Mail, Calendar, Palette, Download
 } from "lucide-react";
 import { FaInstagram, FaTiktok, FaYoutube, FaXTwitter, FaPinterest, FaLinkedin } from "react-icons/fa6";
 
@@ -24,8 +27,11 @@ export default function SettingsPage() {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
+  const { colors } = useThemeCustomization();
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [showColorCustomizer, setShowColorCustomizer] = useState(false);
+  const [exporting, setExporting] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -47,6 +53,25 @@ export default function SettingsPage() {
   const handleLogout = async () => {
     await logout();
     navigate("/login");
+  };
+
+  const handleExport = async () => {
+    setExporting(true);
+    try {
+      const response = await axios.get(`${API}/user/export`, { withCredentials: true });
+      const blob = new Blob([JSON.stringify(response.data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `saved-export-${new Date().toISOString().split('T')[0]}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      toast.success("Données exportées avec succès");
+    } catch (error) {
+      toast.error("Échec de l'export");
+    } finally {
+      setExporting(false);
+    }
   };
 
   if (loading) {
@@ -102,7 +127,10 @@ export default function SettingsPage() {
             {user?.picture ? (
               <img src={user.picture} alt="" className="w-20 h-20 rounded-2xl" />
             ) : (
-              <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-purple-600 via-pink-500 to-orange-400 flex items-center justify-center text-white text-2xl font-bold">
+              <div 
+                className="w-20 h-20 rounded-2xl flex items-center justify-center text-white text-2xl font-bold"
+                style={{ backgroundColor: colors.primary }}
+              >
                 {user?.name?.[0] || "U"}
               </div>
             )}
@@ -120,11 +148,48 @@ export default function SettingsPage() {
           </div>
         </motion.section>
 
-        {/* Usage Section */}
+        {/* Personalization Section */}
         <motion.section
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
+          className="rounded-2xl border border-border bg-card p-6"
+        >
+          <h2 className="text-lg font-semibold mb-6 font-['Outfit'] flex items-center gap-2">
+            <Palette className="w-5 h-5" />
+            Personnalisation
+          </h2>
+
+          <p className="text-sm text-muted-foreground mb-4">
+            Faites de saved. le reflet de votre personnalité en choisissant vos couleurs.
+          </p>
+
+          <div className="flex items-center gap-4">
+            <div className="flex -space-x-2">
+              {['#8B5CF6', '#F97316', '#0EA5E9', '#10B981', '#EC4899'].map(color => (
+                <div 
+                  key={color}
+                  className="w-8 h-8 rounded-full border-2 border-background"
+                  style={{ backgroundColor: color }}
+                />
+              ))}
+            </div>
+            <Button
+              onClick={() => setShowColorCustomizer(true)}
+              variant="outline"
+              className="rounded-full"
+            >
+              <Palette className="w-4 h-4 mr-2" />
+              Personnaliser les couleurs
+            </Button>
+          </div>
+        </motion.section>
+
+        {/* Usage Section */}
+        <motion.section
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
           className="rounded-2xl border border-border bg-card p-6"
         >
           <h2 className="text-lg font-semibold mb-6 font-['Outfit'] flex items-center gap-2">
@@ -135,7 +200,7 @@ export default function SettingsPage() {
           <div className="grid grid-cols-2 gap-4">
             <div className="rounded-xl bg-muted p-4">
               <div className="flex items-center gap-3 mb-2">
-                <Database className="w-5 h-5 text-purple-500" />
+                <Database className="w-5 h-5" style={{ color: colors.primary }} />
                 <span className="text-sm font-medium">Contenus sauvegardés</span>
               </div>
               <p className="text-3xl font-bold font-['Outfit']">{stats?.total_saves || 0}</p>
@@ -143,7 +208,7 @@ export default function SettingsPage() {
             </div>
             <div className="rounded-xl bg-muted p-4">
               <div className="flex items-center gap-3 mb-2">
-                <FolderOpen className="w-5 h-5 text-pink-500" />
+                <FolderOpen className="w-5 h-5" style={{ color: colors.secondary }} />
                 <span className="text-sm font-medium">Collections</span>
               </div>
               <p className="text-3xl font-bold font-['Outfit']">{stats?.total_collections || 0}</p>
@@ -151,9 +216,15 @@ export default function SettingsPage() {
             </div>
           </div>
 
-          <div className="mt-6 p-4 rounded-xl bg-gradient-to-r from-purple-500/10 via-pink-500/10 to-orange-500/10 border border-purple-500/20">
+          <div 
+            className="mt-6 p-4 rounded-xl border"
+            style={{ 
+              backgroundColor: `${colors.primary}08`,
+              borderColor: `${colors.primary}20`
+            }}
+          >
             <p className="text-sm">
-              <span className="font-medium">100% Gratuit</span> - SaveStack est financé par la publicité pour rester accessible à tous.
+              <span className="font-medium">100% Gratuit</span> - saved. est financé par la publicité pour rester accessible à tous.
             </p>
           </div>
         </motion.section>
@@ -163,7 +234,7 @@ export default function SettingsPage() {
           <motion.section
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
+            transition={{ delay: 0.3 }}
             className="rounded-2xl border border-border bg-card p-6"
           >
             <h2 className="text-lg font-semibold mb-6 font-['Outfit'] flex items-center gap-2">
@@ -215,11 +286,38 @@ export default function SettingsPage() {
           </motion.section>
         )}
 
+        {/* Data Export Section */}
+        <motion.section
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+          className="rounded-2xl border border-border bg-card p-6"
+        >
+          <h2 className="text-lg font-semibold mb-4 font-['Outfit'] flex items-center gap-2">
+            <Download className="w-5 h-5" />
+            Exporter mes données
+          </h2>
+          
+          <p className="text-sm text-muted-foreground mb-4">
+            Téléchargez toutes vos données (contenus, collections) au format JSON.
+          </p>
+          
+          <Button
+            onClick={handleExport}
+            disabled={exporting}
+            variant="outline"
+            className="rounded-full"
+          >
+            <Download className="w-4 h-4 mr-2" />
+            {exporting ? "Export en cours..." : "Exporter mes données"}
+          </Button>
+        </motion.section>
+
         {/* Danger Zone */}
         <motion.section
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
+          transition={{ delay: 0.5 }}
           className="rounded-2xl border border-destructive/30 bg-destructive/5 p-6"
         >
           <h2 className="text-lg font-semibold mb-4 font-['Outfit'] text-destructive flex items-center gap-2">
@@ -242,6 +340,12 @@ export default function SettingsPage() {
           </Button>
         </motion.section>
       </main>
+
+      {/* Color Customizer Modal */}
+      <ColorCustomizer
+        open={showColorCustomizer}
+        onClose={() => setShowColorCustomizer(false)}
+      />
     </div>
   );
 }

@@ -27,14 +27,17 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { useAuth, useTheme, API } from "@/App";
+import { useAuth, useTheme, API, useNotifications } from "@/App";
+import { useThemeCustomization } from "@/contexts/ThemeCustomizationContext";
 import { toast } from "sonner";
 import { AdBanner, AdNative, AdStickyFooter } from "@/components/AdComponents";
+import { Logo } from "@/components/Logo";
+import { ColorCustomizer } from "@/components/ColorCustomizer";
 import {
   Bookmark, Search, Plus, Grid3X3, List, Heart, ExternalLink,
   MoreHorizontal, Trash2, Edit, FolderPlus, Moon, Sun, LogOut,
   Settings, ChevronDown, Filter, Link,
-  LayoutDashboard, FolderOpen, Sparkles, Brain, RefreshCw, Tag, Folder
+  LayoutDashboard, FolderOpen, Sparkles, Brain, RefreshCw, Tag, Palette, Bell
 } from "lucide-react";
 import { FaInstagram, FaTiktok, FaYoutube, FaXTwitter, FaPinterest, FaLinkedin, FaFacebook } from "react-icons/fa6";
 
@@ -82,8 +85,10 @@ const categoryColors = {
   default: "bg-gray-500/10 text-gray-600 dark:text-gray-400"
 };
 
-const Sidebar = ({ activePage, onNavigate, user, onLogout, collections, categories }) => {
+const Sidebar = ({ activePage, onNavigate, user, onLogout, collections, categories, onOpenColorCustomizer }) => {
   const { theme, toggleTheme } = useTheme();
+  const { colors } = useThemeCustomization();
+  const { processingItems } = useNotifications();
   const navigate = useNavigate();
 
   const navItems = [
@@ -93,18 +98,13 @@ const Sidebar = ({ activePage, onNavigate, user, onLogout, collections, categori
   ];
 
   return (
-    <aside className="fixed left-0 top-0 bottom-0 w-64 bg-card border-r border-border flex flex-col z-40">
+    <aside 
+      className="fixed left-0 top-0 bottom-0 w-64 flex flex-col z-40 custom-sidebar"
+      style={{ backgroundColor: colors.sidebar }}
+    >
       {/* Logo */}
-      <div className="p-6 border-b border-border">
-        <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate("/")}>
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-purple-600 via-pink-500 to-orange-400 flex items-center justify-center">
-            <Bookmark className="w-4 h-4 text-white" />
-          </div>
-          <div>
-            <span className="font-bold text-xl tracking-tight font-['Outfit']">SaveStack</span>
-            <span className="ml-1 text-xs px-1.5 py-0.5 rounded-full bg-gradient-to-r from-purple-500/20 to-pink-500/20 text-purple-600 dark:text-purple-400 font-medium">AI</span>
-          </div>
-        </div>
+      <div className="p-6 border-b border-white/10">
+        <Logo size="default" showTagline onClick={() => navigate("/")} />
       </div>
 
       {/* Navigation */}
@@ -113,22 +113,45 @@ const Sidebar = ({ activePage, onNavigate, user, onLogout, collections, categori
           <button
             key={item.id}
             onClick={() => onNavigate(item.id)}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
-              activePage === item.id
-                ? "bg-primary text-primary-foreground"
-                : "hover:bg-accent text-muted-foreground hover:text-foreground"
-            }`}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all`}
+            style={{
+              backgroundColor: activePage === item.id ? colors.primary : 'transparent',
+              color: activePage === item.id ? 'white' : colors.sidebarText,
+              opacity: activePage === item.id ? 1 : 0.7
+            }}
             data-testid={`nav-${item.id}`}
           >
             <item.icon className="w-5 h-5" />
             {item.label}
+            {item.id === "dashboard" && processingItems.size > 0 && (
+              <span className="ml-auto relative">
+                <span 
+                  className="w-2 h-2 rounded-full animate-pulse"
+                  style={{ backgroundColor: colors.accent }}
+                />
+              </span>
+            )}
           </button>
         ))}
 
+        {/* Color Customization Button */}
+        <button
+          onClick={onOpenColorCustomizer}
+          className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all hover:opacity-100"
+          style={{ color: colors.sidebarText, opacity: 0.7 }}
+          data-testid="color-customizer-btn"
+        >
+          <Palette className="w-5 h-5" />
+          Personnaliser
+        </button>
+
         {/* Categories Section */}
         {categories && categories.length > 0 && (
-          <div className="pt-4 mt-4 border-t border-border">
-            <p className="px-4 text-xs font-bold uppercase tracking-widest text-muted-foreground mb-3 flex items-center gap-2">
+          <div className="pt-4 mt-4 border-t border-white/10">
+            <p 
+              className="px-4 text-xs font-bold uppercase tracking-widest mb-3 flex items-center gap-2"
+              style={{ color: colors.sidebarText, opacity: 0.5 }}
+            >
               <Brain className="w-3 h-3" />
               Catégories IA
             </p>
@@ -136,34 +159,39 @@ const Sidebar = ({ activePage, onNavigate, user, onLogout, collections, categori
               <button
                 key={cat.category}
                 onClick={() => onNavigate("category", cat.category)}
-                className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm hover:bg-accent transition-colors"
+                className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm hover:opacity-100 transition-all"
+                style={{ color: colors.sidebarText, opacity: 0.7 }}
                 data-testid={`category-${cat.category}`}
               >
                 <div className={`px-2 py-0.5 rounded-full text-xs font-medium ${categoryColors[cat.category] || categoryColors.default}`}>
                   {cat.category}
                 </div>
-                <span className="ml-auto text-xs text-muted-foreground">{cat.count}</span>
+                <span className="ml-auto text-xs" style={{ opacity: 0.5 }}>{cat.count}</span>
               </button>
             ))}
           </div>
         )}
 
-        {/* Publicité Sidebar */}
-        <div className="pt-4 mt-4 border-t border-border">
+        {/* Ad Banner */}
+        <div className="pt-4 mt-4 border-t border-white/10">
           <AdBanner position="sidebar" />
         </div>
 
         {/* Collections List */}
         {collections.length > 0 && (
-          <div className="pt-4 mt-4 border-t border-border">
-            <p className="px-4 text-xs font-bold uppercase tracking-widest text-muted-foreground mb-3">
+          <div className="pt-4 mt-4 border-t border-white/10">
+            <p 
+              className="px-4 text-xs font-bold uppercase tracking-widest mb-3"
+              style={{ color: colors.sidebarText, opacity: 0.5 }}
+            >
               Collections
             </p>
             {collections.slice(0, 5).map(col => (
               <button
                 key={col.collection_id}
                 onClick={() => onNavigate("collection", col.collection_id)}
-                className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm hover:bg-accent transition-colors"
+                className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm hover:opacity-100 transition-all"
+                style={{ color: colors.sidebarText, opacity: 0.7 }}
                 data-testid={`collection-${col.collection_id}`}
               >
                 <div
@@ -171,13 +199,14 @@ const Sidebar = ({ activePage, onNavigate, user, onLogout, collections, categori
                   style={{ backgroundColor: col.color }}
                 />
                 <span className="truncate">{col.name}</span>
-                <span className="ml-auto text-xs text-muted-foreground">{col.content_count}</span>
+                <span className="ml-auto text-xs" style={{ opacity: 0.5 }}>{col.content_count}</span>
               </button>
             ))}
             {collections.length > 5 && (
               <button
                 onClick={() => navigate("/collections")}
-                className="w-full px-4 py-2 text-xs text-muted-foreground hover:text-foreground"
+                className="w-full px-4 py-2 text-xs hover:opacity-100"
+                style={{ color: colors.sidebarText, opacity: 0.5 }}
               >
                 Voir tout ({collections.length})
               </button>
@@ -187,22 +216,28 @@ const Sidebar = ({ activePage, onNavigate, user, onLogout, collections, categori
       </nav>
 
       {/* User Section */}
-      <div className="p-4 border-t border-border">
+      <div className="p-4 border-t border-white/10">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <button className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-accent transition-colors" data-testid="user-menu-trigger">
+            <button 
+              className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 transition-colors" 
+              data-testid="user-menu-trigger"
+            >
               {user?.picture ? (
                 <img src={user.picture} alt="" className="w-9 h-9 rounded-full" />
               ) : (
-                <div className="w-9 h-9 rounded-full bg-gradient-to-br from-purple-600 to-pink-500 flex items-center justify-center text-white font-bold">
+                <div 
+                  className="w-9 h-9 rounded-full flex items-center justify-center text-white font-bold"
+                  style={{ backgroundColor: colors.primary }}
+                >
                   {user?.name?.[0] || "U"}
                 </div>
               )}
               <div className="flex-1 text-left">
-                <p className="text-sm font-medium truncate">{user?.name}</p>
-                <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
+                <p className="text-sm font-medium truncate" style={{ color: colors.sidebarText }}>{user?.name}</p>
+                <p className="text-xs truncate" style={{ color: colors.sidebarText, opacity: 0.5 }}>{user?.email}</p>
               </div>
-              <ChevronDown className="w-4 h-4 text-muted-foreground" />
+              <ChevronDown className="w-4 h-4" style={{ color: colors.sidebarText, opacity: 0.5 }} />
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-56">
@@ -213,6 +248,10 @@ const Sidebar = ({ activePage, onNavigate, user, onLogout, collections, categori
             <DropdownMenuItem onClick={toggleTheme} data-testid="theme-menu-item">
               {theme === "dark" ? <Sun className="w-4 h-4 mr-2" /> : <Moon className="w-4 h-4 mr-2" />}
               {theme === "dark" ? "Mode clair" : "Mode sombre"}
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={onOpenColorCustomizer}>
+              <Palette className="w-4 h-4 mr-2" />
+              Personnaliser
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={onLogout} className="text-destructive" data-testid="logout-menu-item">
@@ -229,6 +268,7 @@ const Sidebar = ({ activePage, onNavigate, user, onLogout, collections, categori
 // Enhanced Content Card with AI features
 const ContentCard = ({ content, onEdit, onDelete, onToggleFavorite, onReprocess }) => {
   const PlatformIcon = platformIcons[content.platform] || Link;
+  const { colors } = useThemeCustomization();
   const isProcessing = content.ai_status === "processing" || content.ai_status === "pending";
 
   return (
@@ -264,7 +304,10 @@ const ContentCard = ({ content, onEdit, onDelete, onToggleFavorite, onReprocess 
 
       {/* AI Processing Indicator */}
       {isProcessing && (
-        <div className="absolute top-3 right-12 px-2 py-1 rounded-full bg-purple-500/90 text-white text-xs font-medium flex items-center gap-1">
+        <div 
+          className="absolute top-3 right-12 px-2 py-1 rounded-full text-white text-xs font-medium flex items-center gap-1"
+          style={{ backgroundColor: colors.primary }}
+        >
           <RefreshCw className="w-3 h-3 animate-spin" />
           <span>IA</span>
         </div>
@@ -296,10 +339,16 @@ const ContentCard = ({ content, onEdit, onDelete, onToggleFavorite, onReprocess 
         
         {/* AI Summary */}
         {content.summary && (
-          <div className="mb-3 p-2 rounded-lg bg-purple-500/5 border border-purple-500/10">
+          <div 
+            className="mb-3 p-2 rounded-lg border"
+            style={{ 
+              backgroundColor: `${colors.primary}08`,
+              borderColor: `${colors.primary}20`
+            }}
+          >
             <div className="flex items-center gap-1 mb-1">
-              <Sparkles className="w-3 h-3 text-purple-500" />
-              <span className="text-xs font-medium text-purple-600 dark:text-purple-400">Résumé IA</span>
+              <Sparkles className="w-3 h-3" style={{ color: colors.primary }} />
+              <span className="text-xs font-medium" style={{ color: colors.primary }}>Résumé IA</span>
             </div>
             <p className="text-xs text-muted-foreground line-clamp-3">{content.summary}</p>
           </div>
@@ -313,7 +362,16 @@ const ContentCard = ({ content, onEdit, onDelete, onToggleFavorite, onReprocess 
         {content.ai_tags && content.ai_tags.length > 0 && (
           <div className="flex flex-wrap gap-1.5 mb-3">
             {content.ai_tags.slice(0, 3).map(tag => (
-              <Badge key={tag} variant="secondary" className="text-xs bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20">
+              <Badge 
+                key={tag} 
+                variant="secondary" 
+                className="text-xs border"
+                style={{ 
+                  backgroundColor: `${colors.primary}10`,
+                  color: colors.primary,
+                  borderColor: `${colors.primary}20`
+                }}
+              >
                 <Tag className="w-2.5 h-2.5 mr-1" />
                 {tag}
               </Badge>
@@ -385,6 +443,7 @@ const ContentCard = ({ content, onEdit, onDelete, onToggleFavorite, onReprocess 
 
 const AddContentModal = ({ open, onClose, collections, onSuccess, prefillData }) => {
   const [loading, setLoading] = useState(false);
+  const { colors } = useThemeCustomization();
   const [formData, setFormData] = useState({
     platform: "instagram",
     content_type: "post",
@@ -397,7 +456,7 @@ const AddContentModal = ({ open, onClose, collections, onSuccess, prefillData })
     collection_ids: []
   });
 
-  // Update form when prefillData changes (from extension or share)
+  // Update form when prefillData changes
   useEffect(() => {
     if (prefillData && open) {
       setFormData(prev => ({
@@ -448,7 +507,7 @@ const AddContentModal = ({ open, onClose, collections, onSuccess, prefillData })
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle className="font-['Outfit'] flex items-center gap-2">
-            <Sparkles className="w-5 h-5 text-purple-500" />
+            <Sparkles className="w-5 h-5" style={{ color: colors.primary }} />
             Sauvegarder un contenu
           </DialogTitle>
           <DialogDescription>L'IA analysera automatiquement le contenu pour l'enrichir</DialogDescription>
@@ -562,7 +621,12 @@ const AddContentModal = ({ open, onClose, collections, onSuccess, prefillData })
             <Button type="button" variant="outline" onClick={onClose}>
               Annuler
             </Button>
-            <Button type="submit" disabled={loading} data-testid="save-content-btn">
+            <Button 
+              type="submit" 
+              disabled={loading} 
+              data-testid="save-content-btn"
+              style={{ backgroundColor: colors.primary }}
+            >
               {loading ? "Sauvegarde..." : "Sauvegarder"}
             </Button>
           </div>
@@ -576,6 +640,8 @@ export default function DashboardPage() {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const { user, logout } = useAuth();
+  const { colors } = useThemeCustomization();
+  const { trackProcessing, completeProcessing } = useNotifications();
   const [activePage, setActivePage] = useState("dashboard");
   const [activeCollectionId, setActiveCollectionId] = useState(null);
   const [activeCategory, setActiveCategory] = useState(null);
@@ -589,14 +655,13 @@ export default function DashboardPage() {
   const [platformFilter, setPlatformFilter] = useState("all");
   const [showAddModal, setShowAddModal] = useState(false);
   const [showStickyAd, setShowStickyAd] = useState(true);
+  const [showColorCustomizer, setShowColorCustomizer] = useState(false);
   const [isSemanticSearch, setIsSemanticSearch] = useState(false);
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
-  
-  // Prefill data from URL params (extension or share)
   const [prefillData, setPrefillData] = useState(null);
 
-  // Check URL params for quick save from extension/share
+  // Check URL params for quick save
   useEffect(() => {
     const shouldSave = searchParams.get("save");
     const url = searchParams.get("url");
@@ -608,11 +673,9 @@ export default function DashboardPage() {
     if (shouldSave === "true" && url) {
       setPrefillData({ url, title, platform, type, thumbnail });
       setShowAddModal(true);
-      // Clear URL params after reading
       setSearchParams({});
     }
     
-    // Check for filter param
     const filter = searchParams.get("filter");
     if (filter === "favorites") {
       setActivePage("favorites");
@@ -644,6 +707,37 @@ export default function DashboardPage() {
   useEffect(() => {
     fetchData();
   }, [fetchData]);
+
+  // Poll for AI processing updates
+  useEffect(() => {
+    const processingContent = content.filter(c => c.ai_status === "processing" || c.ai_status === "pending");
+    
+    if (processingContent.length > 0) {
+      const interval = setInterval(async () => {
+        try {
+          const res = await axios.get(`${API}/content`, { withCredentials: true });
+          const updatedContent = res.data;
+          
+          // Check for completed items
+          processingContent.forEach(item => {
+            const updated = updatedContent.find(c => c.content_id === item.content_id);
+            if (updated && updated.ai_status === "completed") {
+              completeProcessing(item.content_id, true);
+              toast.success(`"${item.title}" analysé par l'IA`);
+            } else if (updated && updated.ai_status === "failed") {
+              completeProcessing(item.content_id, false);
+            }
+          });
+          
+          setContent(updatedContent);
+        } catch (error) {
+          console.error("Failed to poll content:", error);
+        }
+      }, 5000);
+      
+      return () => clearInterval(interval);
+    }
+  }, [content, completeProcessing]);
 
   // Semantic search with debounce
   useEffect(() => {
@@ -718,12 +812,10 @@ export default function DashboardPage() {
     try {
       await axios.post(`${API}/content/${contentId}/reprocess`, {}, { withCredentials: true });
       toast.success("Analyse IA relancée");
-      // Update local state to show processing
+      trackProcessing(contentId);
       setContent(prev => prev.map(c => 
         c.content_id === contentId ? { ...c, ai_status: "processing" } : c
       ));
-      // Refresh data after a delay
-      setTimeout(fetchData, 5000);
     } catch (error) {
       toast.error("Échec du retraitement");
     }
@@ -737,7 +829,7 @@ export default function DashboardPage() {
     ai_tags: r.ai_tags || []
   })) : content;
 
-  // Apply filters (only when not using semantic search)
+  // Apply filters
   if (!isSemanticSearch) {
     if (activePage === "favorites") {
       displayContent = content.filter(c => c.is_favorite);
@@ -752,7 +844,7 @@ export default function DashboardPage() {
     }
   }
 
-  // Insert ads into feed (every 6 items)
+  // Insert ads
   const contentWithAds = [];
   displayContent.forEach((item, index) => {
     contentWithAds.push({ type: "content", data: item });
@@ -788,6 +880,7 @@ export default function DashboardPage() {
         onLogout={handleLogout}
         collections={collections}
         categories={categories}
+        onOpenColorCustomizer={() => setShowColorCustomizer(true)}
       />
 
       {/* Main Content */}
@@ -801,7 +894,7 @@ export default function DashboardPage() {
                 <p className="text-sm text-muted-foreground">
                   {isSemanticSearch ? (
                     <span className="flex items-center gap-1">
-                      <Brain className="w-3 h-3 text-purple-500" />
+                      <Brain className="w-3 h-3" style={{ color: colors.primary }} />
                       {displayContent.length} résultats trouvés par l'IA
                     </span>
                   ) : (
@@ -818,7 +911,10 @@ export default function DashboardPage() {
               <div className="flex items-center gap-3">
                 {/* AI Search */}
                 <div className="relative">
-                  <Brain className={`absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 ${searchQuery ? "text-purple-500" : "text-muted-foreground"}`} />
+                  <Brain 
+                    className={`absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4`}
+                    style={{ color: searchQuery ? colors.primary : undefined }}
+                  />
                   <Input
                     value={searchQuery}
                     onChange={e => setSearchQuery(e.target.value)}
@@ -827,7 +923,10 @@ export default function DashboardPage() {
                     data-testid="search-input"
                   />
                   {isSearching && (
-                    <RefreshCw className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-purple-500 animate-spin" />
+                    <RefreshCw 
+                      className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 animate-spin"
+                      style={{ color: colors.primary }}
+                    />
                   )}
                 </div>
 
@@ -854,14 +953,22 @@ export default function DashboardPage() {
                 <div className="flex items-center border border-border rounded-full p-1">
                   <button
                     onClick={() => setViewMode("grid")}
-                    className={`p-2 rounded-full transition-colors ${viewMode === "grid" ? "bg-primary text-primary-foreground" : ""}`}
+                    className={`p-2 rounded-full transition-colors`}
+                    style={{ 
+                      backgroundColor: viewMode === "grid" ? colors.primary : 'transparent',
+                      color: viewMode === "grid" ? 'white' : undefined
+                    }}
                     data-testid="grid-view-btn"
                   >
                     <Grid3X3 className="w-4 h-4" />
                   </button>
                   <button
                     onClick={() => setViewMode("list")}
-                    className={`p-2 rounded-full transition-colors ${viewMode === "list" ? "bg-primary text-primary-foreground" : ""}`}
+                    className={`p-2 rounded-full transition-colors`}
+                    style={{ 
+                      backgroundColor: viewMode === "list" ? colors.primary : 'transparent',
+                      color: viewMode === "list" ? 'white' : undefined
+                    }}
                     data-testid="list-view-btn"
                   >
                     <List className="w-4 h-4" />
@@ -872,6 +979,7 @@ export default function DashboardPage() {
                 <Button
                   onClick={() => setShowAddModal(true)}
                   className="rounded-full gap-2"
+                  style={{ backgroundColor: colors.primary }}
                   data-testid="add-content-btn"
                 >
                   <Plus className="w-4 h-4" />
@@ -908,7 +1016,12 @@ export default function DashboardPage() {
                 }
               </p>
               {!isSemanticSearch && (
-                <Button onClick={() => setShowAddModal(true)} className="rounded-full gap-2" data-testid="empty-add-btn">
+                <Button 
+                  onClick={() => setShowAddModal(true)} 
+                  className="rounded-full gap-2" 
+                  data-testid="empty-add-btn"
+                  style={{ backgroundColor: colors.primary }}
+                >
                   <Plus className="w-4 h-4" />
                   Ajouter votre premier save
                 </Button>
@@ -947,6 +1060,12 @@ export default function DashboardPage() {
         collections={collections}
         onSuccess={fetchData}
         prefillData={prefillData}
+      />
+
+      {/* Color Customizer Modal */}
+      <ColorCustomizer
+        open={showColorCustomizer}
+        onClose={() => setShowColorCustomizer(false)}
       />
 
       {/* Sticky Footer Ad */}

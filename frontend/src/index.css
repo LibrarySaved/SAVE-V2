@@ -1,8 +1,22 @@
-@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Outfit:wght@500;700;900&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Outfit:wght@500;700;900&family=JetBrains+Mono:wght@400;500&family=Playfair+Display:wght@700&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  /* Default customizable colors */
+  --color-primary: #8B5CF6;
+  --color-secondary: #A78BFA;
+  --color-accent: #C4B5FD;
+  --color-sidebar: #18181B;
+  --color-sidebar-text: #FAFAFA;
+  
+  /* HSL versions for Tailwind */
+  --saved-primary: 258 90% 66%;
+  --saved-secondary: 258 79% 76%;
+  --saved-accent: 258 90% 85%;
+}
 
 body {
     margin: 0;
@@ -13,6 +27,10 @@ body {
 
 h1, h2, h3, h4, h5, h6 {
     font-family: 'Outfit', sans-serif;
+}
+
+.logo-text {
+    font-family: 'Playfair Display', serif;
 }
 
 code {
@@ -41,16 +59,6 @@ code {
         --input: 228 228 231;
         --ring: 24 24 27;
         --radius: 0.75rem;
-        
-        /* Brand colors */
-        --instagram: 225 48 108;
-        --tiktok: 0 0 0;
-        --tiktok-accent: 0 242 234;
-        --youtube: 255 0 0;
-        --twitter: 0 0 0;
-        --pinterest: 230 0 35;
-        --linkedin: 10 102 194;
-        --generic: 37 99 235;
     }
 
     .dark {
@@ -83,6 +91,40 @@ code {
     body {
         @apply bg-background text-foreground;
     }
+}
+
+/* Custom sidebar with dynamic colors */
+.custom-sidebar {
+    background-color: var(--color-sidebar) !important;
+    color: var(--color-sidebar-text) !important;
+}
+
+.custom-sidebar .nav-item-active {
+    background-color: var(--color-primary) !important;
+}
+
+.custom-primary-btn {
+    background-color: var(--color-primary) !important;
+}
+
+.custom-primary-btn:hover {
+    filter: brightness(1.1);
+}
+
+.custom-primary-text {
+    color: var(--color-primary) !important;
+}
+
+.custom-primary-bg {
+    background-color: var(--color-primary) !important;
+}
+
+.custom-secondary-bg {
+    background-color: var(--color-secondary) !important;
+}
+
+.custom-accent-bg {
+    background-color: var(--color-accent) !important;
 }
 
 /* Platform badge colors */
@@ -156,7 +198,9 @@ code {
 
 /* Selection */
 ::selection {
-    @apply bg-primary/20 text-foreground;
+    background-color: var(--color-primary);
+    color: white;
+    opacity: 0.3;
 }
 
 /* Animations */
@@ -178,10 +222,54 @@ code {
 /* Hero glow effect */
 .hero-glow {
     @apply absolute -z-10 blur-3xl opacity-30;
-    background: linear-gradient(135deg, #833AB4 0%, #FD1D1D 50%, #FCB045 100%);
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 50%, var(--color-accent) 100%);
     width: 600px;
     height: 600px;
     border-radius: 50%;
+}
+
+/* Color picker input */
+.color-picker-input {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    width: 40px;
+    height: 40px;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    border-radius: 50%;
+}
+
+.color-picker-input::-webkit-color-swatch {
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.color-picker-input::-moz-color-swatch {
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+/* Notification badge pulse */
+@keyframes pulse-ring {
+    0% {
+        transform: scale(0.8);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(2);
+        opacity: 0;
+    }
+}
+
+.notification-pulse::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background-color: var(--color-primary);
+    animation: pulse-ring 1.5s ease-out infinite;
 }
 
 @layer base {

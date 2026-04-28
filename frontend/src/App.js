@@ -3,6 +3,7 @@ import "@/App.css";
 import { BrowserRouter, Routes, Route, useLocation, Navigate, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { Toaster } from "@/components/ui/sonner";
+import { ThemeCustomizationProvider } from "@/contexts/ThemeCustomizationContext";
 
 // Pages
 import LandingPage from "@/pages/LandingPage";
@@ -14,6 +15,10 @@ import SharePage from "@/pages/SharePage";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 export const API = `${BACKEND_URL}/api`;
+
+// App name and branding
+export const APP_NAME = "saved.";
+export const APP_TAGLINE = "your digital library";
 
 // Theme Context
 const ThemeContext = createContext();
@@ -71,8 +76,6 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   useEffect(() => {
-    // CRITICAL: If returning from OAuth callback, skip the /me check.
-    // AuthCallback will exchange the session_id and establish the session first.
     if (window.location.hash?.includes('session_id=')) {
       setLoading(false);
       return;
@@ -96,6 +99,67 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
+// Notifications Context for AI processing updates
+const NotificationsContext = createContext();
+
+export const useNotifications = () => {
+  const context = useContext(NotificationsContext);
+  if (!context) throw new Error("useNotifications must be used within NotificationsProvider");
+  return context;
+};
+
+export const NotificationsProvider = ({ children }) => {
+  const [notifications, setNotifications] = useState([]);
+  const [processingItems, setProcessingItems] = useState(new Set());
+
+  const addNotification = (notification) => {
+    const id = Date.now();
+    setNotifications(prev => [...prev, { ...notification, id }]);
+    
+    // Auto-remove after 5 seconds
+    setTimeout(() => {
+      removeNotification(id);
+    }, 5000);
+    
+    return id;
+  };
+
+  const removeNotification = (id) => {
+    setNotifications(prev => prev.filter(n => n.id !== id));
+  };
+
+  const trackProcessing = (contentId) => {
+    setProcessingItems(prev => new Set([...prev, contentId]));
+  };
+
+  const completeProcessing = (contentId, success = true) => {
+    setProcessingItems(prev => {
+      const newSet = new Set(prev);
+      newSet.delete(contentId);
+      return newSet;
+    });
+    
+    addNotification({
+      type: success ? 'success' : 'error',
+      title: success ? 'Analyse IA terminée' : 'Échec de l\'analyse',
+      message: success ? 'Votre contenu a été analysé et enrichi par l\'IA' : 'L\'analyse IA a échoué. Vous pouvez réessayer.',
+    });
+  };
+
+  return (
+    <NotificationsContext.Provider value={{
+      notifications,
+      processingItems,
+      addNotification,
+      removeNotification,
+      trackProcessing,
+      completeProcessing
+    }}>
+      {children}
+    </NotificationsContext.Provider>
+  );
+};
+
 // Auth Callback Component
 const AuthCallback = () => {
   const navigate = useNavigate();
@@ -115,7 +179,6 @@ const AuthCallback = () => {
       const sessionId = sessionIdMatch[1];
 
       try {
-        // REMINDER: DO NOT HARDCODE THE URL, OR ADD ANY FALLBACKS OR REDIRECT URLS, THIS BREAKS THE AUTH
         const response = await axios.post(
           `${API}/auth/session`,
           { session_id: sessionId },
@@ -123,7 +186,6 @@ const AuthCallback = () => {
         );
         
         setUser(response.data.user);
-        // Clear hash and navigate
         window.history.replaceState(null, "", window.location.pathname);
         navigate("/dashboard", { replace: true, state: { user: response.data.user } });
       } catch (err) {
@@ -150,7 +212,7 @@ const AuthCallback = () => {
     <div className="min-h-screen flex items-center justify-center bg-background">
       <div className="text-center">
         <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-        <p className="text-muted-foreground">Connecting your account...</p>
+        <p className="text-muted-foreground">Connexion en cours...</p>
       </div>
     </div>
   );
@@ -180,7 +242,6 @@ const ProtectedRoute = ({ children }) => {
 const AppRouter = () => {
   const location = useLocation();
   
-  // Check URL fragment for session_id synchronously during render
   if (location.hash?.includes('session_id=')) {
     return <AuthCallback />;
   }
@@ -222,12 +283,16 @@ const AppRouter = () => {
 function App() {
   return (
     <ThemeProvider>
-      <BrowserRouter>
-        <AuthProvider>
-          <AppRouter />
-          <Toaster position="top-right" />
-        </AuthProvider>
-      </BrowserRouter>
+      <ThemeCustomizationProvider>
+        <BrowserRouter>
+          <AuthProvider>
+            <NotificationsProvider>
+              <AppRouter />
+              <Toaster position="top-right" />
+            </NotificationsProvider>
+          </AuthProvider>
+        </BrowserRouter>
+      </ThemeCustomizationProvider>
     </ThemeProvider>
   );
 }
