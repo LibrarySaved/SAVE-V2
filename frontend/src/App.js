@@ -1,4 +1,4 @@
-import { useEffect, useState, createContext, useContext, useCallback } from "react";
+import { useEffect, useState, createContext, useContext, useCallback, useRef } from "react";
 import "@/App.css";
 import { BrowserRouter, Routes, Route, useLocation, Navigate, useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -212,12 +212,18 @@ const AuthCallback = () => {
   const navigate = useNavigate();
   const { setUser } = useAuth();
   const [error, setError] = useState(null);
+  // CRITICAL: ref guard prevents double-exchange under React StrictMode
+  // (useEffect fires twice in dev — second call would re-use a consumed session_id)
+  const hasProcessed = useRef(false);
 
   useEffect(() => {
+    if (hasProcessed.current) return;
+    hasProcessed.current = true;
+
     const processAuth = async () => {
       const hash = window.location.hash;
       const sessionIdMatch = hash.match(/session_id=([^&]+)/);
-      
+
       if (!sessionIdMatch) {
         navigate("/login");
         return;
@@ -231,14 +237,15 @@ const AuthCallback = () => {
           { session_id: sessionId },
           { withCredentials: true }
         );
-        
+
         setUser(response.data.user);
         window.history.replaceState(null, "", window.location.pathname);
         navigate("/dashboard", { replace: true, state: { user: response.data.user } });
       } catch (err) {
         console.error("Auth callback error:", err);
-        setError("Authentication failed. Please try again.");
-        setTimeout(() => navigate("/login"), 2000);
+        const detail = err.response?.data?.detail || err.message || "Unknown error";
+        setError(`Authentication failed: ${detail}`);
+        setTimeout(() => navigate("/login"), 3000);
       }
     };
 
