@@ -541,7 +541,13 @@ async def create_session(request: Request, response: Response):
         value=session_token,
         httponly=True,
         secure=True,
-        samesite="none",
+        # `lax` works for first-party cookies (same domain for frontend + API).
+        # Safari and Firefox block `samesite=none` cookies after a cross-site
+        # top-level navigation (e.g. returning from auth.emergentagent.com),
+        # which caused the "Network Error / auth failed" message on Safari.
+        # `lax` is still sent on top-level GET navigations and on same-origin
+        # XHR, which is exactly what we need here.
+        samesite="lax",
         path="/",
         max_age=7 * 24 * 60 * 60
     )

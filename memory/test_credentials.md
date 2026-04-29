@@ -47,7 +47,7 @@ await page.context.add_cookies([{
     "path": "/",
     "httpOnly": True,
     "secure": True,
-    "sameSite": "None",
+    "sameSite": "Lax",
 }])
 ```
 
